@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
 import DetailSegment from "@components/DetailSegment";
+import { Link } from "react-router-dom";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -14,6 +15,8 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
   return (
     <div className={props.className}>
       <h1>DETAILS SCREEN</h1>
+
+      <Link to={"/results"}>{"< Go back"}</Link>
 
       <div className="detail-summary">
         <div className="detail-segments">

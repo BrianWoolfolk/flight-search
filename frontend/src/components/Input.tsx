@@ -34,7 +34,7 @@ export type InputProps = {
   /** Indica si el valor a guardar se coloca en un parseNumber() antes de almacenarse en _store. */
   _as_number?: true;
   /** Indica si este input será un select de un grupo de valores. */
-  _select_from?: string[];
+  _select_from?: string[] | string;
   /** Indica si crear un conjunto de radio buttons para seleccionar de algún valor marcado. El Map contiene `Key-Value`. */
   _options?: Map<string | number, string | number | boolean>;
   /** En caso de que exista `_options`, indica si crear `<radio-buttons>` o un `<select>`. Default `false`. */
@@ -100,7 +100,7 @@ export type InputProps = {
 
   /** Indica si se incluye una advertencia para que el usuario pueda ver restricciones e información adicional. */
   _withWarning?: boolean;
-  /** Indica si se incluye un `div.wrapper` al rededor del `input` y `label`. */
+  /** Indica si se incluye un `div.wrapper` alrededor del `input` y `label`. */
   _withWrapper?: boolean;
 } & _Base;
 // #endregion
@@ -385,7 +385,13 @@ const _Input = (props: InputProps) => {
     // ---------------------------------------------------------------------- INPUT ELEMENT
     input = (
       <input
-        list={props._select_from ? id + "-list" : ""}
+        list={
+          typeof props._select_from === "string"
+            ? props._select_from
+            : props._select_from
+            ? id + "-list"
+            : ""
+        }
         ref={ref}
         id={id}
         type={props._type}
@@ -452,7 +458,7 @@ const _Input = (props: InputProps) => {
         <div className="wrapper">
           {input}
 
-          {props._select_from !== undefined && (
+          {typeof props._select_from === "object" && (
             <datalist id={id + "-list"}>
               {props._select_from.map((value, index) => (
                 <option key={index} value={value} />
@@ -475,7 +481,7 @@ const _Input = (props: InputProps) => {
         <>
           {input}
 
-          {props._select_from !== undefined && (
+          {typeof props._select_from === "object" && (
             <datalist id={id + "-list"}>
               {props._select_from.map((value, index) => (
                 <option key={index} value={value} />

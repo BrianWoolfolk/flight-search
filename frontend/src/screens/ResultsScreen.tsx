@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
-import { Link } from "react-router-dom";
+import { Link, useActionData } from "react-router-dom";
 import ResultCard from "@components/ResultCard";
 
 // #region ##################################################################################### PROPS

@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
+import { useNavigate } from "react-router";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -9,9 +10,11 @@ type ResultCardProps = {} & _Base;
 
 // #region ##################################################################################### COMPONENT
 const _ResultCard = (props: ResultCardProps) => {
+  const navi = useNavigate();
+
   // ---------------------------------------------------------------------- RETURN
   return (
-    <div className={props.className}>
+    <div className={props.className} onClick={() => navi("/details")}>
       <div className="flight-time">1:40pm - 10:37pm</div>
 
       <div>San Francisco (SFO) - New York (JFK)</div>
@@ -53,6 +56,16 @@ const ResultCard = styled(_ResultCard).attrs(
 
     padding: 2em 1.75em;
     margin: var(--margin-big);
+
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
 
     .flight-time {
       grid-column: 1 / 3;

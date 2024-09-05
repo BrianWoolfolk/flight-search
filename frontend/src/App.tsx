@@ -27,6 +27,8 @@ export const GS = new _T.Global();
 /** Obtiene información sobre un ticket específico. */
 async function loadFlight(req: _LoaderFunctionArgs) {
   // ============================== PREV CHECK
+  console.log(req);
+
   // no needed
 
   /** ============================== GET PARAMS */
@@ -52,40 +54,17 @@ async function loadFlight(req: _LoaderFunctionArgs) {
 // #region ##################################################################################### FUNCIONES ACTIONS
 // ---------------------------------------------------------------------- ACTION TICKET CRUD
 /** Se encarga de enviar los checks para confirmar un ticket. */
-async function actionTicket(req: _ActionFunctionArgs) {
+async function submitFlight(req: _ActionFunctionArgs) {
   // ============================== PREV CHECK
   // no needed
 
-  // ============================== RETRIEVE CACHE
-  const data = GS.cache?.ticket as _T.Ticket;
+  const formdata = await req.request.formData();
 
-  if (!data) {
-    GS.setAlert({
-      _message: "Falta información importante!",
-      _type: "error",
-    });
-    return null;
-  }
+  const dep = formdata.get("departure");
+  const arr = formdata.get("arrival");
 
-  // ============================== CHECK DATA
-  data.members.forEach((memb) => {
-    if (memb.accepted !== !!memb.acceptedDate) {
-      memb.acceptedDate = memb.accepted ? new Date() : null;
-    }
-  });
+  console.log(dep, arr);
 
-  // ============================== FS ACTION
-  const success = {};
-
-  if (success) {
-    GS.setAlert({
-      _message: "Gracias por confirmar!",
-      _type: "success",
-    });
-  }
-
-  // ============================== RETURN
-  GS.cache = {};
   return null;
 }
 // #endregion
@@ -133,6 +112,7 @@ function App() {
             {
               path: "results",
               loader: loadFlight,
+              action: submitFlight,
               element: <ResultsScreen />,
             },
             // -------------------------------------------------- TICKETS PAGE
