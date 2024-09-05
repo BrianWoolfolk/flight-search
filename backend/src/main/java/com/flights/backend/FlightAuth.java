@@ -1,12 +1,15 @@
 package com.flights.backend;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -30,6 +33,9 @@ public class FlightAuth {
         return url;
     }
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     // TOKEN MANAGEMENT
     private String token = null;
     private Instant tokenCreationTime = null;
@@ -52,22 +58,22 @@ public class FlightAuth {
     private void getCredentials() {
         // FORMULATE REQUEST
         String url = this.url + "/v1/security/oauth2/token";
-        Map<String, String> body = Map.of(
-                "client_id", this.client_id,
-                "client_secret", this.client_secret,
-                "grant_type", "client_credentials"
-        );
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+        headers.set("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "client_credentials");
+        requestBody.add("client_id", this.client_id);
+        requestBody.add("client_secret", this.client_secret);
 
         // MAKE REQUEST & GET RESPONSE
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.POST, request, String.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
         // READ BODY
         JsonNode resBody = JsonService.readBody(response);
-        this.token = "Bearer " + resBody.get("access_token");
+        this.token = "Bearer " + resBody.get("access_token").asText();
         this.tokenCreationTime = Instant.now();
         this.tokenDurationSeconds = resBody.get("expires_in").asInt();
     }

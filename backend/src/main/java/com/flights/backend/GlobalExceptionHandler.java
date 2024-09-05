@@ -6,12 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClientException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(HttpStatusCodeException.class)
     public ResponseEntity<String> handleHttpStatusCodes(HttpStatusCodeException err) {
+        System.out.println("error at client request: " + err);
+        err.printStackTrace();
         return new ResponseEntity<>(err.getMessage(), err.getStatusCode());
     }
 

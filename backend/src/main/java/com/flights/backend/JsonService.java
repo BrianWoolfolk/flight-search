@@ -70,9 +70,9 @@ public class JsonService {
 
             // COMPOSE CUSTOM STRING
             String compose =
-                    entry.get("name") + " - "
-                            + entry.get("address").get("cityName")
-                            + " ("  + entry.get("iataCode") + ")";
+                    entry.get("name").asText() + " - "
+                            + entry.get("address").get("cityName").asText()
+                            + " ("  + entry.get("iataCode").asText() + ")";
 
             pickedData.add(compose);
         }

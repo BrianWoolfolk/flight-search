@@ -33,7 +33,7 @@ public class FlightService {
         HttpHeaders headers = flightAuth.getHeaders();
 
         // MAKE REQUEST & GET RESPONSE
-        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
         // READ RESPONSE
@@ -47,7 +47,7 @@ public class FlightService {
         HttpHeaders headers = flightAuth.getHeaders();
 
         // MAKE REQUEST & GET RESPONSE
-        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
         // READ RESPONSE
