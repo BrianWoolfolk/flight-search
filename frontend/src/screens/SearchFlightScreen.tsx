@@ -7,7 +7,7 @@ import {
 import Input from "@components/Input";
 import { useState } from "react";
 import { Form, Link } from "react-router-dom";
-import IATA from "@utils/airports.json";
+import { GS } from "App";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -17,7 +17,47 @@ type SearchFlightScreenProps = {} & _Base;
 
 // #region ##################################################################################### COMPONENT
 const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
-  const [LS, setLS] = useState<any>({});
+  const [LS] = useState<any>({ timeout: undefined, lastKey: "" });
+  const [IATAList, setIATAList] = useState<string[]>(
+    JSON.parse(localStorage.getItem("IATACodes") || "[]")
+  );
+
+  async function getIATA(keyword: string, searchingFor: string) {
+    if (!keyword.trim()) return;
+
+    if (LS["prev_" + searchingFor] === keyword) return;
+    LS["prev_" + searchingFor] = keyword;
+
+    if (IATAList.includes(keyword)) return;
+
+    const response = await fetch(
+      "http://localhost:8080/searchIATA?keyword=" + keyword
+    ).catch(() => {
+      GS.setAlert({
+        _message: "We're having trouble loading the Airports",
+        _type: "warning",
+      });
+      return null;
+    });
+
+    // ERRORS DOES NOT HAVE DATA
+    if (!response || !response.ok) return;
+
+    const list = (await response.json()) as string[];
+    localStorage.setItem("IATACodes", JSON.stringify(list));
+
+    setIATAList([...new Set<string>([...IATAList, ...list])]);
+  }
+
+  function handleDeparture(keyword: string) {
+    clearTimeout(LS.timeout);
+    LS.timeout = setTimeout(() => getIATA(keyword, "departure"), 1000);
+  }
+
+  function handleArrival(keyword: string) {
+    clearTimeout(LS.timeout);
+    LS.timeout = setTimeout(() => getIATA(keyword, "arrival"), 1000);
+  }
 
   // ---------------------------------------------------------------------- RETURN
   return (
@@ -35,9 +75,13 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
             _store_var="departure"
             _required="*"
             _select_from={"airports-list"}
+            _placeholder="Start writing to see suggestions..."
             _width={"xl"}
+            _onChange={handleDeparture}
             _onBlur={(value, el) => {
-              if (!IATA.codes.includes(value)) return "Please select a option";
+              if (!IATAList.includes(value)) {
+                el.setCustomValidity("Please select a option");
+              }
             }}
           />
 
@@ -48,14 +92,18 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
             _store_var="arrival"
             _required="*"
             _select_from={"airports-list"}
+            _placeholder="Start writing to see suggestions..."
             _width={"xl"}
+            _onChange={handleArrival}
             _onBlur={(value, el) => {
-              if (!IATA.codes.includes(value)) return "Please select a option";
+              if (!IATAList.includes(value)) {
+                el.setCustomValidity("Please select a option");
+              }
             }}
           />
 
           <datalist id={"airports-list"}>
-            {IATA.codes.map((value, index) => (
+            {IATAList.map((value, index) => (
               <option key={index} value={value} />
             ))}
           </datalist>
@@ -107,6 +155,18 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
                 ["EUR", "eur"],
               ])
             }
+          />
+
+          <Input
+            _store={LS}
+            _store_var="adults"
+            _label="No. of adults"
+            _required="*"
+            _preset="int"
+            _range={[1, undefined, false]}
+            _as_number
+            _width={"s"}
+            _name="adults"
           />
 
           <Input
