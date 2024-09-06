@@ -164,7 +164,7 @@ export class FlightSearchParams extends _setup {
   /** `number` - Number of adults traveling. */
   adults: number = 1;
   /** `Currency` - Currency to consider for the flight. */
-  currency: Currency = Currency.USD;
+  currencyCode: Currency = Currency.USD;
   /** `boolean` - Indicates if the plane could have stops in other cities. */
   nonStop: boolean = false;
 
@@ -184,7 +184,7 @@ export class FlightSearchParams extends _setup {
       search.append("returnDate", intoInputDate(this.returnDate));
     }
     search.append("adults", this.adults.toString());
-    search.append("currency", this.currency.toString());
+    search.append("currencyCode", this.currencyCode.toString());
     search.append("nonStop", this.nonStop.toString());
     return search;
   };
@@ -205,6 +205,363 @@ export class FlightSearchParams extends _setup {
 }
 // #endregion
 
-// #region ##################################################################################### MISCELLANEOUS
-// ---------------------------------------------------------------------- LOADER DATA MODEL
+// #region ##################################################################################### DICTIONARY CLASS
+// ---------------------------------------------------------------------- DICTIONARY
+export class Dictionary extends _setup {
+  locations: Locations = {};
+  aircraft: Aircrafts = {};
+  currencies: Currencies = {};
+  carriers: Carriers = {};
+
+  constructor(ini?: AutoKeys<Dictionary>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- LOCATIONS
+export type Locations = {
+  [x: string]: {
+    cityCode: string;
+    countryCode: string;
+  };
+};
+
+// ---------------------------------------------------------------------- AIRCRAFTS
+export type Aircrafts = {
+  [x: string]: string;
+};
+
+// ---------------------------------------------------------------------- CURRENCIES
+export type Currencies = {
+  [x: string]: string;
+};
+
+// ---------------------------------------------------------------------- CARRIERS
+export type Carriers = {
+  [x: string]: string;
+};
 // #endregion
+
+// #region ##################################################################################### FLIGHT SEGMENT
+// ---------------------------------------------------------------------- FLIGHT END POINT
+export class FlightEndPoint extends _setup {
+  iataCode: string = "";
+  terminal?: string;
+  /** This is a `$date-time` string like: `YYYY-MM-ddThh:mm:ss` */
+  at?: string;
+
+  constructor(ini?: AutoKeys<FlightEndPoint>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- FLIGHT SEGMENT
+export class FlightSegment extends _setup {
+  departure: FlightEndPoint = new FlightEndPoint();
+  arrival: FlightEndPoint = new FlightEndPoint();
+  carrierCode = "";
+  number = 0;
+  aircraft = { code: "" };
+  operating = { carrierCode: "" };
+  /** This is a `$stop-time` string like: `PnYnMnDTnHnMnS` */
+  duration = "";
+  numberOfStops = 0;
+  stops?: FlightStop[];
+  blacklistedInEU = false;
+  co2Emissions = null; // WIP
+
+  constructor(ini?: AutoKeys<FlightSegment>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Flight Stop
+export class FlightStop extends _setup {
+  iataCode = "";
+  /** This is a `$stop-time` string like: `PnYnMnDTnHnMnS` */
+  duration = "";
+  /** This is a `$date-time` string like: `YYYY-MM-ddThh:mm:ss` */
+  arrivalAt?: string;
+  /** This is a `$date-time` string like: `YYYY-MM-ddThh:mm:ss` */
+  departureAt?: string;
+
+  constructor(ini?: AutoKeys<FlightStop>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Flight Offer
+export class FlightOffer extends _setup {
+  type = "";
+  source: string[] = [];
+  instantTicketingRequired?: boolean;
+  nonHomogeneous?: boolean;
+  oneWay?: boolean;
+  isUpsellOffer?: boolean;
+  /** This is a `$date` string like: `YYYY-MM-dd` */
+  lastTicketingDate?: string;
+  /** This is a `$date-time` string like: `YYYY-MM-ddThh:mm:ss` */
+  lastTicketingDateTime?: string;
+  numberOfBookableSeats?: number;
+  itineraries: Itinerary[] = [];
+  price: Price = new Price();
+  pricingOptions: PricingOptions = new PricingOptions();
+  validatingAirlineCodes?: string[];
+  travelerPricings: TravelerPricing[] = [];
+
+  constructor(ini?: AutoKeys<FlightOffer>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Price
+export class Price extends _setup {
+  margin = "";
+  /** Total amount paid by the user (including fees and selected additional services). */
+  grandTotal = "";
+  /** Currency of the payment. It may be different than the requested currency */
+  billingCurrency = Currency.EUR;
+  aditionalServices: AdditionalService[] = [];
+  currency = Currency.EUR;
+  /** Total amount paid by the user */
+  total = "";
+  /** Amount wwithout taxes */
+  base = "";
+  fees: Fee[] = [];
+  taxes: Tax[] = [];
+  refundableTaxes = "";
+
+  constructor(ini?: AutoKeys<Price>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+enum AdditionalServiceType {
+  CHECKED_BAGS = "CHECKED_BAGS",
+  MEALS = "MEALS",
+  SEATS = "SEATS",
+  OTHER_SERVICES = "OTHER_SERVICES",
+}
+
+// ---------------------------------------------------------------------- AdditionalService
+export class AdditionalService extends _setup {
+  amount = "";
+  type = AdditionalServiceType.CHECKED_BAGS;
+
+  constructor(ini?: AutoKeys<AdditionalService>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+enum FareType {
+  PUBLISHED = "PUBLISHED",
+  NEGOTIATED = "NEGOTIATED",
+  CORPORATE = "CORPORATE",
+}
+
+// ---------------------------------------------------------------------- PricingOptions
+export class PricingOptions extends _setup {
+  fareType: FareType[] = [];
+  includedCheckedBagsOnly = false;
+  refundableFare = false;
+  noRestrictionFare = false;
+  noPenaltyFare = false;
+
+  constructor(ini?: AutoKeys<PricingOptions>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Itinerary
+export class Itinerary extends _setup {
+  /** Format `PnYnMnDTnHnMnS` */
+  duration = "";
+  segments: FlightSegment[] = [];
+
+  constructor(ini?: AutoKeys<Itinerary>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+// #endregion
+
+// #region ##################################################################################### TRAVELER PRICING
+enum FareOption {
+  STANDARD = "STANDARD",
+  INCLUSIVE_TOUR = "INCLUSIVE_TOUR",
+  SPANISH_MELILLA_RESIDENT = "SPANISH_MELILLA_RESIDENT",
+  SPANISH_CEUTA_RESIDENT = "SPANISH_CEUTA_RESIDENT",
+  SPANISH_CANARY_RESIDENT = "SPANISH_CANARY_RESIDENT",
+  SPANISH_BALEARIC_RESIDENT = "SPANISH_BALEARIC_RESIDENT",
+  AIR_FRANCE_METROPOLITAN_DISCOUNT_PASS = "AIR_FRANCE_METROPOLITAN_DISCOUNT_PASS",
+  AIR_FRANCE_DOM_DISCOUNT_PASS = "AIR_FRANCE_DOM_DISCOUNT_PASS",
+  AIR_FRANCE_COMBINED_DISCOUNT_PASS = "AIR_FRANCE_COMBINED_DISCOUNT_PASS",
+  AIR_FRANCE_FAMILY = "AIR_FRANCE_FAMILY",
+  ADULT_WITH_COMPANION = "ADULT_WITH_COMPANION",
+  COMPANION = "COMPANION",
+}
+
+enum TravelerType {
+  ADULT = "ADULT",
+  CHILD = "CHILD",
+  SENIOR = "SENIOR",
+  YOUNG = "YOUNG",
+  HELD_INFANT = "HELD_INFANT",
+  SEATED_INFANT = "SEATED_INFANT",
+  STUDENT = "STUDENT",
+}
+
+// ---------------------------------------------------------------------- TravelerPricing
+export class TravelerPricing extends _setup {
+  travelerId = "";
+  fareOption: FareOption = FareOption.STANDARD;
+  travelerType: TravelerType = TravelerType.ADULT;
+  associatedAdultId?: string;
+  price: TravelerPrice = new TravelerPrice();
+  fareDetailsBySegment: FareDetails[] = [];
+
+  constructor(ini?: AutoKeys<TravelerPricing>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- TravelerPrice
+export class TravelerPrice extends _setup {
+  currency = "";
+  /** Total amount paid by the user */
+  total = "";
+  /** Amount without taxes */
+  base = "";
+  fees: Fee[] = [];
+  taxes: Tax[] = [];
+  refundableTaxes = "";
+
+  constructor(ini?: AutoKeys<TravelerPrice>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+enum FeeType {
+  TICKETING = "TICKETING",
+  FORM_OF_PAYMENT = "FORM_OF_PAYMENT",
+  SUPPLIER = "SUPPLIER",
+}
+
+// ---------------------------------------------------------------------- Fee
+export class Fee extends _setup {
+  amount = "";
+  type: FeeType = FeeType.TICKETING;
+
+  constructor(ini?: AutoKeys<Fee>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Tax
+export class Tax extends _setup {
+  amount = "";
+  code = "";
+
+  constructor(ini?: AutoKeys<Tax>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+enum CabinType {
+  ECONOMY = "ECONOMY",
+  PREMIUM_ECONOMY = "PREMIUM_ECONOMY",
+  BUSINESS = "BUSINESS",
+  FIRST = "FIRST",
+}
+
+// ---------------------------------------------------------------------- FareDetails
+export class FareDetails extends _setup {
+  segmentId = "";
+  cabin = CabinType.ECONOMY;
+  fareBasis = "";
+  brandedFare = "";
+  brandedFareLabel = "";
+  class = "";
+  isAllotment = false;
+  allotmentDetails = {
+    tourName: "",
+    tourReference: "",
+  };
+  sliceDiceIndicator = "";
+  includedCheckedBags = {
+    quantity: 0,
+    weight: 0,
+    weightUnit: "",
+  };
+  additionalServices = new AdditionalServicesRequest();
+  amenities: Amenity[] = [];
+
+  constructor(ini?: AutoKeys<FareDetails>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+enum OtherServices {
+  PRIORITY_BOARDING = "PRIORITY_BOARDING",
+  AIRPORT_CHECKIN = "AIRPORT_CHECKIN",
+}
+
+// ---------------------------------------------------------------------- AdditionalServicesRequest
+export class AdditionalServicesRequest extends _setup {
+  chargeableCheckedBags = {
+    quantity: 0,
+    weight: 0,
+    weightUnit: "",
+    id: "",
+  };
+  chargeableSeat = {
+    id: "",
+    number: 0,
+  };
+  otherServices: OtherServices[] = [];
+
+  constructor(ini?: AutoKeys<AdditionalServicesRequest>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+
+// ---------------------------------------------------------------------- Amenity
+export class Amenity extends _setup {
+  description = "";
+  isChargeable = true;
+  amenityType = "";
+  amenityProvider = {
+    name: "",
+  };
+
+  constructor(ini?: AutoKeys<Amenity>) {
+    super(ini);
+    this.update(ini);
+  }
+}
+// #endregion
+
+// ---------------------------------------------------------------------- APIData
+export class APIData extends _setup {
+  data: FlightOffer[] = [];
+  dictionaries?: Dictionary;
+
+  constructor(ini?: AutoKeys<APIData>) {
+    super(ini);
+    this.update(ini);
+  }
+}
