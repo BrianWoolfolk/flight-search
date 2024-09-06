@@ -15,7 +15,8 @@ public record FlightSearchQuery(
         String departureDate,
         String returnDate,
         int adults,
-        boolean nonStop
+        boolean nonStop,
+        Currency currencyCode
 ) {
      public FlightSearchQuery {
          if (originLocationCode == null || originLocationCode.isBlank())
@@ -36,8 +37,8 @@ public record FlightSearchQuery(
                  "&destinationLocationCode=" + destinationLocationCode +
                  "&departureDate=" + departureDate +
                  "&adults=" + adults +
-                 "&returnDate=" + returnDate +
-                 "&nonStop=" + nonStop;
+                 "&nonStop=" + nonStop +
+                 "&currencyCode=" + currencyCode.getCode();
          if (returnDate != null) str += "&returnDate=" + returnDate;
 
          return str;

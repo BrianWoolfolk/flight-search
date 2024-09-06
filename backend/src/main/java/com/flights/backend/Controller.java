@@ -18,10 +18,18 @@ public class Controller {
             @RequestParam() String departureDate,
             @RequestParam( required = false ) String returnDate,
             @RequestParam( defaultValue = "1" ) int adults,
-            @RequestParam( defaultValue = "false") boolean nonStop
+            @RequestParam( defaultValue = "false") boolean nonStop,
+            @RequestParam( defaultValue = "USD" ) Currency currencyCode
     ) {
         // CONVERT VALUES
-        FlightSearchQuery req = new FlightSearchQuery(originLocationCode, destinationLocationCode, departureDate, returnDate, adults, nonStop);
+        FlightSearchQuery req = new FlightSearchQuery(
+                originLocationCode,
+                destinationLocationCode,
+                departureDate,
+                returnDate,
+                adults,
+                nonStop,
+                currencyCode);
 
         // MAKE REQUEST
         String res = service.searchFlight(req);
