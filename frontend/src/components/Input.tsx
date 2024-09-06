@@ -175,6 +175,13 @@ const _Input = (props: InputProps) => {
       if (props._type === "date") {
         const dd = fromInputDate(val);
 
+        // ARE NULL DATES ALLOWED?
+        if (props._required && !dd) {
+          valid(props._required + "\n" + props._charset_text, el, blurring);
+          setLS(dd); // UPDATE INPUT
+          return;
+        }
+
         if (props._onChange) {
           const err = props._onChange(val, el);
           if (err) {
@@ -186,7 +193,7 @@ const _Input = (props: InputProps) => {
 
         valid("", el); // REMOVE ERRORS
         setLS(dd); // UPDATE INPUT
-        if (dd.getTime()) props._store[props._store_var] = dd;
+        props._store[props._store_var] = dd;
         props._afterChange?.(val, el);
         return;
       }
@@ -399,7 +406,7 @@ const _Input = (props: InputProps) => {
         autoComplete={"one-time-code"}
         className={"input " + (props._className || "")}
         disabled={props._disabled}
-        value={LS instanceof Date ? intoInputDate(LS) : LS}
+        value={props._type === "date" ? intoInputDate(LS) : LS}
         checked={LS}
         placeholder={props._placeholder}
         title={tooltip}

@@ -6,8 +6,9 @@ import {
 } from "scripts/FunctionsBundle";
 import Input from "@components/Input";
 import { useState } from "react";
-import { Form, Link } from "react-router-dom";
 import { GS } from "App";
+import * as _T from "@utils/ClassTypes";
+import { useNavigate } from "react-router";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -17,11 +18,17 @@ type SearchFlightScreenProps = {} & _Base;
 
 // #region ##################################################################################### COMPONENT
 const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
-  const [LS] = useState<any>({ timeout: undefined, lastKey: "" });
+  const [LS] = useState<{ timeout?: NodeJS.Timeout }>({});
+  const [FormData] = useState<_T.FlightSearchParams>(
+    new _T.FlightSearchParams()
+  );
   const [IATAList, setIATAList] = useState<string[]>(
     JSON.parse(localStorage.getItem("IATACodes") || "[]")
   );
 
+  const redirect = useNavigate();
+
+  // ---------------------------------------------------------------------- GET IATA CODES
   async function getIATA(keyword: string, searchingFor: string) {
     if (!keyword.trim()) return;
 
@@ -49,6 +56,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
     setIATAList([...new Set<string>([...IATAList, ...list])]);
   }
 
+  // ---------------------------------------------------------------------- HANDLE CODES
   function handleDeparture(keyword: string) {
     clearTimeout(LS.timeout);
     LS.timeout = setTimeout(() => getIATA(keyword, "departure"), 1000);
@@ -59,20 +67,27 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
     LS.timeout = setTimeout(() => getIATA(keyword, "arrival"), 1000);
   }
 
+  // ---------------------------------------------------------------------- HANDLE SUBMIT
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const search = FormData.createSearch();
+    redirect("/results?" + search);
+  }
+
   // ---------------------------------------------------------------------- RETURN
   return (
     <div className={props.className}>
       <h1>Flight Search</h1>
 
-      <Form method="POST" action="/results">
+      <form onSubmit={handleSubmit}>
         <fieldset>
           <legend>Flight Information</legend>
 
           <Input
             _label="Departure Airport"
-            _name="departure"
-            _store={LS}
-            _store_var="departure"
+            _store={FormData}
+            _store_var="originLocationCode"
             _required="*"
             _select_from={"airports-list"}
             _placeholder="Start writing to see suggestions..."
@@ -87,9 +102,8 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
 
           <Input
             _label="Arrival Airport"
-            _store={LS}
-            _name="arrival"
-            _store_var="arrival"
+            _store={FormData}
+            _store_var="destinationLocationCode"
             _required="*"
             _select_from={"airports-list"}
             _placeholder="Start writing to see suggestions..."
@@ -110,32 +124,34 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
 
           <Input
             _label="Departure Date"
-            _store={LS}
-            _store_var="departure_date"
+            _store={FormData}
+            _store_var="departureDate"
             _preset="date"
             _range={[intoInputDate(new Date()), undefined, undefined]}
             _onChange={(val, el) => {
-              if (fromInputDate(val).getTime() <= Date.now())
+              const dd = fromInputDate(val);
+              if (!dd || dd.getTime() <= Date.now())
                 return "Please select a date in the future";
             }}
           />
 
           <Input
             _label="Return Date"
-            _store={LS}
-            _store_var="return_date"
+            _store={FormData}
+            _store_var="returnDate"
             _preset="date"
             _required=""
             _range={[intoInputDate(new Date()), undefined, undefined]}
             _onChange={(val, el) => {
               if (!val) return "";
 
-              if (fromInputDate(val).getTime() <= Date.now())
+              const dd = fromInputDate(val);
+              if (!dd || dd.getTime() <= Date.now())
                 return "Please select a date in the future";
 
               if (
-                !LS["departure_date"] ||
-                fromInputDate(val).getTime() <= LS["departure_date"].getTime()
+                !FormData.departureDate ||
+                dd.getTime() <= FormData.departureDate.getTime()
               )
                 return (
                   "Return date must be after the departure date.\n" +
@@ -146,19 +162,19 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
 
           <Input
             _label="Currency"
-            _store={LS}
+            _store={FormData}
             _store_var="currency"
             _options={
               new Map([
-                ["USD", "usd"],
-                ["MXN", "mxn"],
-                ["EUR", "eur"],
+                ["USD", _T.Currency.USD],
+                ["MXN", _T.Currency.MXN],
+                ["EUR", _T.Currency.EUR],
               ])
             }
           />
 
           <Input
-            _store={LS}
+            _store={FormData}
             _store_var="adults"
             _label="No. of adults"
             _required="*"
@@ -166,12 +182,11 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
             _range={[1, undefined, false]}
             _as_number
             _width={"s"}
-            _name="adults"
           />
 
           <Input
             _label="Flight type"
-            _store={LS}
+            _store={FormData}
             _store_var="non_stop"
             _options_as_radio
             _options={
@@ -184,10 +199,8 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
           />
         </fieldset>
 
-        <button>Enviar</button>
-      </Form>
-
-      <Link to={"/results"}>Search</Link>
+        <button>Search</button>
+      </form>
     </div>
   );
 };

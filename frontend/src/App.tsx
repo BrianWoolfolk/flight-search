@@ -12,7 +12,7 @@ import DetailsScreen from "@screens/DetailsScreen";
 
 // ---------------------------------------------------------------------- TYPESCRIPT IMPORTS
 type _LoaderFunctionArgs = import("react-router-dom").LoaderFunctionArgs;
-type _ActionFunctionArgs = import("react-router-dom").ActionFunctionArgs;
+// type _ActionFunctionArgs = import("react-router-dom").ActionFunctionArgs;
 // #endregion
 
 // #region ##################################################################################### GLOBAL STATE
@@ -20,29 +20,27 @@ type _ActionFunctionArgs = import("react-router-dom").ActionFunctionArgs;
  * Objeto principal de estado global. Almacena toda la información de la base de datos relevante.
  */
 export const GS = new _T.Global();
+
+// shortcut
+export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 // #endregion
 
 // #region ##################################################################################### FUNCIONES LOADERS
 // ---------------------------------------------------------------------- LOAD FLIGHT
 /** Obtiene información sobre un ticket específico. */
 async function loadFlight(req: _LoaderFunctionArgs) {
-  // ============================== PREV CHECK
-  console.log(req);
+  // ============================== GET PARAMS
+  const url = new URL(req.request.url);
+  const composedUrl = BACKEND_URL + "/searchFlight" + url.search;
 
-  // no needed
-
-  /** ============================== GET PARAMS */
-  const { ticketid } = req.params;
-
-  // ============================== GET ALL USERS
-  // const data = ticketid ? await FSAction("read", ticketid, { id: "" }) : null;
-  const data = { ticketid };
+  // ============================== GET DATA
+  const data = await fetch(composedUrl).catch(() => null);
 
   // NO DATA
   if (!data) {
     throw new Response("Not Found", {
       status: 404,
-      statusText: "No se encontró el ticket ingresado.",
+      statusText: "Service unavailable. Try again in a few minutes.",
     });
   }
 
@@ -52,21 +50,7 @@ async function loadFlight(req: _LoaderFunctionArgs) {
 // #endregion
 
 // #region ##################################################################################### FUNCIONES ACTIONS
-// ---------------------------------------------------------------------- ACTION TICKET CRUD
-/** Se encarga de enviar los checks para confirmar un ticket. */
-async function submitFlight(req: _ActionFunctionArgs) {
-  // ============================== PREV CHECK
-  // no needed
-
-  const formdata = await req.request.formData();
-
-  const dep = formdata.get("departure");
-  const arr = formdata.get("arrival");
-
-  console.log(dep, arr);
-
-  return null;
-}
+// ---------------------------------------------------------------------- TO BE DEFINED
 // #endregion
 
 // #region ##################################################################################### MAIN APPLICATION
@@ -106,13 +90,17 @@ function App() {
             // -------------------------------------------------- SEARCH PAGE
             {
               path: "search",
+              loader: undefined,
               element: <SearchFlightScreen />,
             },
             // -------------------------------------------------- RESULTS PAGE
             {
               path: "results",
               loader: loadFlight,
-              action: submitFlight,
+              action: undefined,
+              shouldRevalidate: (req) => {
+                return req.currentUrl.pathname === "/search";
+              },
               element: <ResultsScreen />,
             },
             // -------------------------------------------------- TICKETS PAGE

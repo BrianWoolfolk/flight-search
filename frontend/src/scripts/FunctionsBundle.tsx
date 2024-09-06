@@ -319,6 +319,8 @@ export function parseDate(date: string | Date, wDay = true, wYear = true) {
  * @param date Una fecha real la cual meter al input.
  */
 export function intoInputDate(date: string | Date) {
+  if (!date || (typeof date === "string" && !date.trim())) return "";
+
   const tt = new Date(date);
   const dd = tt.getDate().toString();
   const mm = (tt.getMonth() + 1).toString();
@@ -341,6 +343,8 @@ export function intoInputDate(date: string | Date) {
  * @param date `string` directamente sacado como value del input.
  */
 export function fromInputDate(date: string) {
+  if (isNaN(new Date(date).getTime())) return null;
+
   const yy = parseNumber(date.substring(0, 4));
   const mm = parseNumber(date.substring(5, 7)) - 1;
   const dd = parseNumber(date.substring(8, 10));

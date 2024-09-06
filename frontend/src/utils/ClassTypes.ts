@@ -1,3 +1,5 @@
+import { intoInputDate } from "scripts/FunctionsBundle";
+
 type _AlMsg = import("@components/AlertMessage").AlertMessageProps;
 
 // #region ##################################################################################### ESSENTIALS
@@ -126,8 +128,81 @@ export class Global {
 }
 // #endregion
 
-// #region ##################################################################################### DATABASE MODELS
-// ---------------------------------------------------------------------- TO BE DEFINED
+// #region ##################################################################################### API MODELS
+// ---------------------------------------------------------------------- AVAILABLE CURRENCIES
+export enum Currency {
+  USD = "USD",
+  MXN = "MXN",
+  EUR = "EUR",
+}
+
+// ---------------------------------------------------------------------- FLIGHT SEARCH PARAMS
+/**
+ * Represents a SearchParams to correctly get all desired values for the API.
+ * 1. {@link id} - ***readonly*** `string | null`.
+ * 1. {@link originLocationCode} - `string`.
+ * 1. {@link destinationLocationCode} - `string`.
+ * 1. {@link departureDate} - `Date`.
+ * 1. {@link returnDate} - `Date`.
+ * 1. {@link adults} - `number`.
+ * 1. {@link currency} - `Currency`.
+ * 1. {@link nonStop} - `boolean`.
+ * */
+export class FlightSearchParams extends _setup {
+  /** `string` - IATA code of the origin airport. */
+  originLocationCode: string = "";
+  /** `string` - IATA code of the destination airport. */
+  destinationLocationCode: string = "";
+  /** `Date` - In the format yyyy-MM-dd. Required. */
+  departureDate: Date = (() => {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    return t;
+  })();
+  /** `Date | null` - In the format yyyy-MM-dd. Not required. */
+  returnDate: Date | null = null;
+  /** `number` - Number of adults traveling. */
+  adults: number = 1;
+  /** `Currency` - Currency to consider for the flight. */
+  currency: Currency = Currency.USD;
+  /** `boolean` - Indicates if the plane could have stops in other cities. */
+  nonStop: boolean = false;
+
+  /**
+   * Creates a URLSearchParams object with all the info needed to request
+   */
+  readonly createSearch = () => {
+    const search = new URLSearchParams();
+    search.append("originLocationCode", this.originLocationCode.slice(-4, -1));
+    search.append(
+      "destinationLocationCode",
+      this.destinationLocationCode.slice(-4, -1)
+    );
+    search.append("departureDate", intoInputDate(this.departureDate));
+    if (this.returnDate) {
+      console.log(this);
+      search.append("returnDate", intoInputDate(this.returnDate));
+    }
+    search.append("adults", this.adults.toString());
+    search.append("currency", this.currency.toString());
+    search.append("nonStop", this.nonStop.toString());
+    return search;
+  };
+
+  /**
+   * Coloca todos los props automáticamente.
+   * @param ini Objeto de donde obtener los datos iniciales.
+   *
+   * 1. Puede estar vacío y puede omitir algunos campos.
+   * 2. Se toma el valor por defecto de las propiedades que no se incluyan.
+   * 3. Si el tipo de dato de las propiedades no coincide, se ignora.
+   * 4. Se pueden incluir propiedades de más.
+   */
+  constructor(ini?: AutoKeys<FlightSearchParams>) {
+    super(ini);
+    this.update(ini);
+  }
+}
 // #endregion
 
 // #region ##################################################################################### MISCELLANEOUS
