@@ -10,6 +10,8 @@ import LandingScreen from "@screens/LandingScreen";
 import ResultsScreen from "@screens/ResultsScreen";
 import DetailsScreen from "@screens/DetailsScreen";
 
+import JSN from "@utils/exampleresponse.json";
+
 // ---------------------------------------------------------------------- TYPESCRIPT IMPORTS
 type _LoaderFunctionArgs = import("react-router-dom").LoaderFunctionArgs;
 // type _ActionFunctionArgs = import("react-router-dom").ActionFunctionArgs;
@@ -33,18 +35,26 @@ async function loadFlight(req: _LoaderFunctionArgs) {
   const url = new URL(req.request.url);
   const composedUrl = BACKEND_URL + "/searchFlight" + url.search;
 
+  console.log("loader entered: ", JSN);
+  if (1) return JSN;
+
   // ============================== GET DATA
-  const data = await fetch(composedUrl).catch(() => null);
+  const response = await fetch(composedUrl).catch(() => null);
 
   // NO DATA
-  if (!data) {
+  if (!response) {
     throw new Response("Not Found", {
       status: 404,
       statusText: "Service unavailable. Try again in a few minutes.",
     });
   }
 
+  // INVALID DATA
+  console.log(response);
+  if (!response.ok) throw response;
+
   // RETURN DATA
+  const data = await response.json();
   return data;
 }
 // #endregion
@@ -96,17 +106,22 @@ function App() {
             // -------------------------------------------------- RESULTS PAGE
             {
               path: "results",
+              id: "results",
               loader: loadFlight,
-              action: undefined,
               shouldRevalidate: (req) => {
                 return req.currentUrl.pathname === "/search";
               },
-              element: <ResultsScreen />,
-            },
-            // -------------------------------------------------- TICKETS PAGE
-            {
-              path: "details",
-              element: <DetailsScreen />,
+              children: [
+                {
+                  index: true,
+                  element: <ResultsScreen />,
+                },
+                // -------------------------------------------------- TICKETS PAGE
+                {
+                  path: ":index",
+                  element: <DetailsScreen />,
+                },
+              ],
             },
           ],
         },

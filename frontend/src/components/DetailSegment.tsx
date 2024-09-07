@@ -1,10 +1,15 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
+import { Dictionary, FlightSegment } from "@utils/ClassTypes";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
 // DetailSegment => Rename all instances to use (CTRL + SHIFT + L)
-type DetailSegmentProps = {} & _Base;
+type DetailSegmentProps = {
+  _data: FlightSegment;
+  _dictionary: Dictionary;
+  _index: number;
+} & _Base;
 // #endregion
 
 // #region ##################################################################################### COMPONENT
@@ -13,13 +18,21 @@ const _DetailSegment = (props: DetailSegmentProps) => {
   return (
     <div className={props.className}>
       <div className="content">
-        <span>Segment 1</span>
+        <span>Segment {props._index + 1}</span>
 
-        <span>YYYY-MM-DD HH:mm - YYYY-MM-DD HH:mm</span>
+        <span>
+          {props._data.departure.at?.slice(0, -3).replace("T", " ")} -{" "}
+          {props._data.arrival.at?.slice(0, -3).replace("T", " ")}
+        </span>
 
-        <span>San Francisco (SFO) - New York (JFK)</span>
+        <span>
+          ({props._data.departure.iataCode}) - ({props._data.arrival.iataCode})
+        </span>
 
-        <span>Aeromexico (AM) 65AM</span>
+        <span>
+          {props._dictionary.carriers[props._data.carrierCode]} (
+          {props._data.carrierCode})
+        </span>
 
         <div className="img">
           <img src="https://picsum.photos/300" alt="Traveler fare details" />
