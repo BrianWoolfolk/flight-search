@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @RestController
 public class Controller {
@@ -47,6 +49,18 @@ public class Controller {
         String res = service.searchIATA(keyword);
 
         // RETURN RESPONSE
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = { RequestMethod.GET }, value = { "/searchCodes" })
+    public ResponseEntity<String> apiSearchCodes(@RequestParam() List<String> codes) {
+         if (codes.isEmpty())
+             return new ResponseEntity<>("At least 1 IATA code is required", HttpStatus.BAD_REQUEST);
+
+        // MAKE REQUEST
+         String res = service.searchCodes(codes);
+
+         // RETURN RESPONSE
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

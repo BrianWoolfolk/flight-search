@@ -26,8 +26,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Error while processing the response body: " + err.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(InterruptedException.class)
+    public ResponseEntity<String> handleInterruptedException(InterruptedException err) {
+        return new ResponseEntity<>("Error while fetching multiple IATA codes: " + err.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleEverythingElse(Exception ex) {
-        return new ResponseEntity<>("Unknown error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleEverythingElse(Exception err) {
+        System.out.println("error at client request: " + err);
+        err.printStackTrace();
+        return new ResponseEntity<>("Unknown error: " + err.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -10,6 +10,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Iterator;
+import java.util.List;
+
 @Service
 public class FlightService {
 
@@ -19,12 +22,14 @@ public class FlightService {
     private final RestTemplate restTemplate;
     private final FlightAuth flightAuth;
     private final JsonService jsonService;
+    private final FlightCodeSearcher flightCodeSearcher;
 
     @Autowired
-    public FlightService(RestTemplate restTemplate, FlightAuth flightAuth, JsonService jsonService) {
+    public FlightService(RestTemplate restTemplate, FlightAuth flightAuth, JsonService jsonService, FlightCodeSearcher flightCodeSearcher) {
         this.restTemplate = restTemplate;
         this.flightAuth = flightAuth;
         this.jsonService = jsonService;
+        this.flightCodeSearcher = flightCodeSearcher;
     }
 
     public String searchFlight(FlightSearchQuery query) {
@@ -38,7 +43,11 @@ public class FlightService {
 
         // READ RESPONSE
         JsonNode body = JsonService.readBody(response);
-        return jsonService.pickFlightInfo(body).toString();
+
+        // READ DICTIONARY TO FETCH ALL IATA CODES
+        JsonNode locObj = searchCodes(jsonService.pickLocationsFromDictionary(body));
+
+        return jsonService.pickFlightInfo(body, locObj).toString();
     }
 
     public String searchIATA(String keyword) {
@@ -53,5 +62,25 @@ public class FlightService {
         // READ RESPONSE
         JsonNode body = JsonService.readBody(response);
         return jsonService.pickIATAInfo(body).toString();
+    }
+
+    public JsonNode searchCodes(Iterator<String> codes) {
+        // FORMULATE REQUEST
+        String url = flightAuth.getUrl() + "/v1/reference-data/locations/A";
+        HttpHeaders headers = flightAuth.getHeaders();
+
+        // MAKE REQUESTS
+        JsonNode locationsObj;
+        try {
+            locationsObj = flightCodeSearcher.fetchLocationsObj(url, codes, headers);
+        } catch (InterruptedException err) {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, err.getMessage());
+        }
+
+        return locationsObj;
+    }
+
+    public String searchCodes(List<String> codes) {
+        return searchCodes(codes.iterator()).toString();
     }
 }

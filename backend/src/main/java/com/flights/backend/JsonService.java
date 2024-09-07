@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -17,6 +19,9 @@ public class JsonService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Set<String> flightDataKeys = Set.of(
             "itineraries", "price", "pricingOptions", "travelerPricings"
+    );
+    private static final Set<String> airlineDataKeys = Set.of(
+            "name", "id", "iataCode"
     );
 
     public static JsonNode readBody(ResponseEntity<String> response) {
@@ -41,7 +46,7 @@ public class JsonService {
         return jsonBody;
     }
 
-    public JsonNode pickFlightInfo(JsonNode root) {
+    public JsonNode pickFlightInfo(JsonNode root, JsonNode locationsObj) {
         // PICK INFO FROM ALL DATA ENTRIES
         JsonNode allData = root.get("data");
         ArrayNode pickedData = objectMapper.createArrayNode();
@@ -58,6 +63,15 @@ public class JsonService {
         ObjectNode newRoot = objectMapper.createObjectNode();
         newRoot.set("data", pickedData);
         newRoot.set("dictionaries", root.get("dictionaries"));
+
+        if (locationsObj != null) {
+            JsonNode dPath = newRoot.path("dictionaries");
+
+            if (dPath.isObject()) {
+                ObjectNode dictObj = (ObjectNode) dPath;
+                dictObj.replace("locations", locationsObj);
+            }
+        }
 
         return newRoot;
     }
@@ -78,5 +92,44 @@ public class JsonService {
         }
 
         return pickedData;
+    }
+
+    public JsonNode pickAirportInfo(JsonNode root) {
+        // PICK INFO FROM ALL DATA ENTRIES
+        JsonNode dataObj = root.get("data");
+
+        // ONLY CHOSEN KEYS
+        ObjectNode newEntry = objectMapper.createObjectNode();
+        for (String key : airlineDataKeys) newEntry.set(key, dataObj.get(key));
+
+        newEntry.set("cityName", dataObj.get("address").get("cityName"));
+        newEntry.set("cityCode", dataObj.get("address").get("cityCode"));
+        newEntry.set("countryCode", dataObj.get("address").get("countryCode"));
+
+        // RETURN FILTERED OBJECT
+        return newEntry;
+    }
+
+    public JsonNode createLocationsObj(List<ResponseEntity<String>> fromResponses) {
+        ObjectNode locationsObj = objectMapper.createObjectNode();
+
+        // FOR EVERY RESPONSE ADD: "<IATA CODE>": { <info about IATA code> }
+        for (ResponseEntity<String> resp : fromResponses) {
+            JsonNode objData = pickAirportInfo(readBody(resp));
+            locationsObj.set(objData.get("iataCode").asText(), objData);
+        }
+
+        // THIS CAN BE ADDED AS "locations": <locationsObj>
+        return locationsObj;
+    }
+
+    public Iterator<String> pickLocationsFromDictionary(JsonNode root) {
+        JsonNode dict = root.get("dictionaries");
+        if (dict.isNull() || dict.isEmpty()) return null;
+
+        dict = dict.get("locations");
+        if (dict.isNull() || dict.isEmpty()) return null;
+
+        return dict.fieldNames();
     }
 }
