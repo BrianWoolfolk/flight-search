@@ -1,8 +1,9 @@
 import styled, { css } from "styled-components";
-import { parseCSS, parseNumber } from "scripts/FunctionsBundle";
+import { parseCSS, parseNumber, parsePrice } from "scripts/FunctionsBundle";
 import DetailSegment from "@components/DetailSegment";
 import { Link, useParams, useRouteLoaderData } from "react-router-dom";
 import { APIData } from "@utils/ClassTypes";
+import ResultCard from "@components/ResultCard";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -15,8 +16,10 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
   const loaderData = useRouteLoaderData("results") as APIData;
   const { index } = useParams();
 
+  /** Shortcut. */
+  const offer = loaderData.data[parseNumber(index || "")];
+
   function createSegments() {
-    const offer = loaderData.data[parseNumber(index || "")];
     const arr: JSX.Element[] = [];
 
     for (const itin of offer.itineraries) {
@@ -26,6 +29,7 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
       }
 
       let i = 0;
+      let prevArrival: string | undefined = undefined;
       for (const segm of itin.segments) {
         arr.push(
           <DetailSegment
@@ -33,9 +37,13 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
             _data={segm}
             _index={i}
             _dictionary={loaderData.dictionaries!}
+            _travelerPricing={offer.travelerPricings[0]} // suppose every adult is the same
+            _prevArrival={prevArrival}
           />
         );
+
         ++i;
+        prevArrival = segm.arrival.at;
       }
     }
 
@@ -51,19 +59,63 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
         {"< Go back"}
       </Link>
 
+      <ResultCard
+        _data={offer}
+        _dictionary={loaderData.dictionaries!}
+        _item={parseNumber(index || "")}
+        _disabled
+      />
+
       <div className="detail-summary">
         <div className="detail-segments">{createSegments()}</div>
 
         <div className="detail-breakdown">
-          <span>Price Breakdown</span>
+          <h4>Price Breakdown</h4>
 
-          <p>
-            Base <br />
-            Feeds <br />
-            Total
-          </p>
+          <div>
+            Base: {parsePrice(offer.price.base, true, 2, 2)}{" "}
+            {offer.price.currency} <br />
+            Fees:
+            <ul className="detail-fees">
+              {offer.price.fees?.map((fee, i) => (
+                <li key={i}>
+                  {fee.type}: {parsePrice(fee.amount, true, 2, 2)}{" "}
+                  {offer.price.currency}
+                </li>
+              )) || " None"}
+            </ul>
+          </div>
 
-          <img src="https://picsum.photos/200/500" alt="Per traveler" />
+          <span className="bold">
+            Grand Total: {parsePrice(offer.price.grandTotal, true, 2, 2)}{" "}
+            {offer.price.currency}
+          </span>
+
+          <div className="price-per-traveler">
+            <span>Price per traveler</span>
+
+            <ol>
+              {offer.travelerPricings.map((tPrice, i) => (
+                <li key={i}>
+                  Type: {tPrice.travelerType} <br />
+                  Base price: {parsePrice(tPrice.price.base, true, 2, 2)}{" "}
+                  {tPrice.price.currency} <br />
+                  Taxes:
+                  {tPrice.price.taxes?.map((fee, i) => (
+                    <li key={i}>
+                      {fee.code}: {parsePrice(fee.amount, true, 2, 2)}{" "}
+                      {tPrice.price.currency}
+                    </li>
+                  )) || " None"}{" "}
+                  <br />
+                  <span className="bold">
+                    Total: {parsePrice(tPrice.price.total, true, 2, 2)}{" "}
+                    {tPrice.price.currency}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -99,6 +151,15 @@ const DetailsScreen = styled(_DetailsScreen).attrs(
       height: fit-content;
       overflow: auto;
       max-height: calc(100svh - 2rem);
+    }
+
+    ol,
+    ul {
+      margin-left: 1.5rem;
+
+      > li {
+        padding-bottom: 0.5em;
+      }
     }
 
     ${parseCSS(props._style)}

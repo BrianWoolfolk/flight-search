@@ -224,6 +224,10 @@ export type Locations = {
   [x: string]: {
     cityCode: string;
     countryCode: string;
+    name: string;
+    iataCode: string;
+    id: string;
+    cityName: string;
   };
 };
 

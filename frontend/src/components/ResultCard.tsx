@@ -2,6 +2,12 @@ import styled, { css } from "styled-components";
 import { parseCSS, parsePrice } from "scripts/FunctionsBundle";
 import { useNavigate } from "react-router";
 import { Dictionary, FlightOffer } from "@utils/ClassTypes";
+import {
+  getFlightTime,
+  getFlightLocations,
+  getFlightStops,
+  getCarriers,
+} from "scripts/FlightFunctions";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -10,6 +16,7 @@ type ResultCardProps = {
   _data: FlightOffer;
   _dictionary: Dictionary;
   _item: number;
+  _disabled?: boolean;
 } & _Base;
 // #endregion
 
@@ -17,96 +24,35 @@ type ResultCardProps = {
 const _ResultCard = (props: ResultCardProps) => {
   const navi = useNavigate();
 
-  function getFlightTime() {
-    const itin = props._data.itineraries[0];
-
-    const firstHour = new Date(itin.segments[0].departure.at || "")
-      .toLocaleTimeString()
-      .replace(":00 ", "")
-      .toLowerCase();
-
-    const lastHour = new Date(
-      itin.segments[itin.segments.length - 1].arrival.at || ""
-    )
-      .toLocaleTimeString()
-      .replace(":00 ", "")
-      .toLowerCase();
-
-    return firstHour + " - " + lastHour;
-  }
-
-  function getFlightLocations() {
-    const itin = props._data.itineraries[0];
-
-    const origIata = itin.segments[0].departure.iataCode;
-    const destIata = itin.segments[itin.segments.length - 1].arrival.iataCode;
-
-    return `(${origIata}) - (${destIata})`;
-  }
-
-  function getDuration(str: string) {
-    const reg = /T(?:(\d+)H)?(?:(\d+)M)?/;
-    const match = reg.exec(str);
-    let newStr = "";
-
-    if (match) {
-      newStr += match[1] ? match[1] + "h " : "";
-      newStr += match[2] ? match[2] + "m" : "";
-    }
-
-    return newStr;
-  }
-
-  function getFlightStops() {
-    const itin = props._data.itineraries[0];
-
-    const stopInfo: string[] = [];
-    for (const segm of itin.segments) {
-      if (segm.stops) {
-        for (const fStop of segm.stops) {
-          stopInfo.push(
-            `${getDuration(fStop.duration)} in (${fStop.iataCode})`
-          );
-        }
-      }
-    }
-
-    stopInfo.unshift(
-      getDuration(itin.duration) +
-        (stopInfo.length ? ` ${stopInfo.length} stop(s)` : " Nonstop")
-    );
-
-    return stopInfo;
-  }
-
-  function getCarriers() {
-    const itin = props._data.itineraries[0];
-    const arr: string[] = [];
-
-    for (const segm of itin.segments) {
-      arr.push(
-        props._dictionary.carriers[segm.carrierCode] + `(${segm.carrierCode})`
-      );
-    }
-
-    return [...new Set<string>(arr)];
+  function handleClick() {
+    if (!props._disabled) navi(props._item + "");
   }
 
   // ---------------------------------------------------------------------- RETURN
   return (
-    <div className={props.className} onClick={() => navi(props._item + "")}>
-      <div className="flight-time">{getFlightTime()}</div>
+    <div className={props.className} onClick={handleClick}>
+      <div className="flight-time">
+        {getFlightTime(props._data.itineraries[0])}
+      </div>
 
-      <div>{getFlightLocations()}</div>
+      <div>
+        {getFlightLocations(
+          props._data.itineraries[0],
+          props._dictionary.locations
+        )}
+      </div>
 
       <div className="flight-stops">
-        {getFlightStops().map((val, i) => (
+        {getFlightStops(props._data.itineraries[0]).map((val, i) => (
           <span key={i}>{val}</span>
         ))}
       </div>
 
       <div className="flight-carriers">
-        {getCarriers().map((val, i) => (
+        {getCarriers(
+          props._data.itineraries[0],
+          props._dictionary.carriers
+        ).map((val, i) => (
           <span key={i}>{val}</span>
         ))}
       </div>
@@ -153,15 +99,18 @@ const ResultCard = styled(_ResultCard).attrs(
     padding: 2em 1.75em;
     margin: var(--margin-big);
 
-    cursor: pointer;
+    ${!props._disabled &&
+    `
+      cursor: pointer;
 
-    &:hover {
-      opacity: 0.9;
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
+      &:hover {
+        opacity: 0.9;
+      }
+  
+      &:active {
+        transform: scale(0.95);
+      }
+    `}
 
     .flight-time {
       grid-column: 1 / 3;
