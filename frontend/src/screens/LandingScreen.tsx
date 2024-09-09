@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -12,7 +13,11 @@ type LandingScreenProps = {} & _Base;
 const _LandingScreen = (props: LandingScreenProps) => {
   // ---------------------------------------------------------------------- RETURN
   return (
-    <div className={props.className}>
+    <div className={props.className + " screen"}>
+      <Helmet>
+        <title>Main Screen | Flight Search</title>
+      </Helmet>
+
       <h1>Landing Screen</h1>
 
       <h2>README</h2>

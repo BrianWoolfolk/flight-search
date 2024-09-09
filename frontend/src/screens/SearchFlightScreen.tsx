@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import { GS } from "App";
 import * as _T from "@utils/ClassTypes";
 import { useNavigate } from "react-router";
+import { Helmet } from "react-helmet";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -100,6 +101,10 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
   // ---------------------------------------------------------------------- RETURN
   return (
     <div className={props.className}>
+      <Helmet>
+        <title>Search | Flight Search</title>
+      </Helmet>
+
       <h1>Flight Search</h1>
 
       <form onSubmit={handleSubmit}>

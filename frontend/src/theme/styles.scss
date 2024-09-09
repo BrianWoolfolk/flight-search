@@ -1,0 +1,1259 @@
+// #region ##################################################################################### (85) SECCIÓN PRINCIPAL
+// ---------------------------------------------------------------------- (70) SECCIÓN SECUNDARIA
+// -------------------------------------------------- (50) SECCIÓN TERCIARIA
+// ============================== (30) MINI-SECCIÓN
+// #endregion
+
+// #region ##################################################################################### IMPORTS
+// ---------------------------------------------------------------------- SASS
+@use "sass:list";
+// ---------------------------------------------------------------------- FONTS
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+// ---------------------------------------------------------------------- BOOTSTRAP ICONS
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+
+// ---------------------------------------------------------------------- FONTS VARIABLES
+$font-Cinzel: "Cinzel";
+$font-Tangerine: "Poppins";
+$font-OpenText: "OpenText";
+$font-PinyonScript: "PinyonScript";
+// #endregion
+
+// #region ##################################################################################### VARIABLES
+// ---------------------------------------------------------------------- SASS VARIABLES
+// -------------------------------------------------- COLORS
+// ============================== PALETTE
+$color-palette-blue-ultra: #0c3670;
+$color-palette-blue-royal: #1a6396;
+$color-palette-blue-light: #94d5db;
+$color-palette-blue-pastel: #accbe1;
+$color-palette-blue: #297ca4;
+$color-palette-gray: #96a9b0;
+$color-palette-pink: #f8a295;
+$color-palette-beige: #f8e7aa;
+$color-palette-brown: #814603;
+$color-palette-golden: #daa520;
+$color-palette-cream: #f8b55c;
+$color-palette-orange: #ff9815;
+
+// ============================== CLASSIC
+$color-classic-blue: #0d6efd; // PRIMARY
+$color-classic-indigo: #35008b; // VISITED
+$color-classic-purple: #6f42c1;
+$color-classic-pink: #d63384;
+$color-classic-red: #dc3545; // Active - Danger - Selected Links
+$color-classic-orange: #fd7e14; // Hover
+$color-classic-yellow: #ffc107; // Warning
+$color-classic-green: #198754; // Success
+$color-classic-teal: #20c997;
+$color-classic-cyan: #0dcaf0; // Emphasis - Info - Links
+
+// ============================== SHADOW
+$color-shadow-black: #000000;
+$color-shadow-dark: #212529; // Dark - Alternative Text
+$color-shadow-semidark: #2e2e2e;
+$color-shadow-darkgray: #343a40;
+$color-shadow-lightgray: #6c757d; // Secondary
+$color-shadow-semilight: #ced4da;
+$color-shadow-light: #eaeaea;
+$color-shadow-white: #f8f9fa;
+
+// ============================== STATE
+$color-state-success: #29bc6b;
+$color-state-warning: #{$color-classic-yellow};
+$color-state-error: #{$color-classic-red};
+$color-state-informative: #{$color-classic-cyan};
+
+// ============================== TRANSPARENT COLORS
+$color-transparent: transparent; // Background
+$color-semi-transparent: #00000080;
+
+// -------------------------------------------------- LINEAR GRADIENTS
+$gradient-logo: linear-gradient(180deg,
+        var(--color-palette-blue-light) 0%,
+        trasparent 100%);
+
+// -------------------------------------------------- SHADOWS
+$shadow-small: 0 0 10px -3px var(--color-shadow-black);
+$shadow-medium: 0 0 15px -3px var(--color-shadow-dark);
+$shadow-button: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+$shadow-round: 0 0 20px 0 var(--color-semi-transparent);
+
+$shadow-updown: inset 0px 20px 20px -20px var(--color-semi-transparent),
+    inset 0px -20px 20px -20px var(--color-semi-transparent);
+
+$shadow-sides: inset -20px 0px 20px -20px var(--color-semi-transparent),
+    inset 20px 0px 20px -20px var(--color-semi-transparent);
+
+// -------------------------------------------------- OTHER
+// ============================== MARGIN & PADDING
+$margin-small: 0.5rem 0.75rem;
+$margin-medium: 0.75rem 1.5rem;
+$margin-big: 1.75rem 2.5rem;
+
+$margin-section: 7rem auto;
+$margin-title: 3.5rem 0;
+$margin-subtitle: 1.5rem 0;
+$margin-screen: 0.5rem 1.25rem;
+
+$padding-small: 0.25em 0.5em;
+$padding-medium: 0.5em 0.75em;
+$padding-big: 0.75em 0.85em;
+$padding-huge: 2em 1.75em; // WIP
+
+$padding-button: 0.3em 1em;
+
+// ============================== FONT SIZES
+$size-big: 8rem;
+$size-title: 5rem;
+$size-subtitle: 3rem;
+$size-content: 2.5rem;
+$size-thirdtitle: 2rem;
+$size-label: 1.25rem;
+$size-body: 1rem;
+
+// ============================== FONT FAMILIES
+$font-icons: "bootstrap-icons";
+$font-poppins: "Poppins";
+$font-raleway: "Raleway";
+$font-roboto: "Roboto";
+
+// ---------------------------------------------------------------------- CSS VARIABLES
+:root {
+    // -------------------------------------------------- COLORS
+    // ============================== PALETTE
+    --color-palette-blue-ultra: #{$color-palette-blue-ultra};
+    --color-palette-blue-royal: #{$color-palette-blue-royal};
+    --color-palette-blue-pastel: #{$color-palette-blue-pastel};
+    --color-palette-blue-light: #{$color-palette-blue-light};
+    --color-palette-blue: #{$color-palette-blue};
+    --color-palette-gray: #{$color-palette-gray};
+    --color-palette-pink: #{$color-palette-pink};
+    --color-palette-beige: #{$color-palette-beige};
+    --color-palette-brown: #{$color-palette-brown};
+    --color-palette-golden: #{$color-palette-golden};
+    --color-palette-cream: #{$color-palette-cream};
+    --color-palette-orange: #{$color-palette-orange};
+
+    // ============================== CLASSIC COLORS
+    --color-classic-blue: #{$color-classic-blue};
+    --color-classic-indigo: #{$color-classic-indigo};
+    --color-classic-purple: #{$color-classic-purple};
+    --color-classic-pink: #{$color-classic-pink};
+    --color-classic-red: #{$color-classic-red};
+    --color-classic-orange: #{$color-classic-orange};
+    --color-classic-yellow: #{$color-classic-yellow};
+    --color-classic-green: #{$color-classic-green};
+    --color-classic-teal: #{$color-classic-teal};
+    --color-classic-cyan: #{$color-classic-cyan};
+
+    // ============================== SHADOW COLORS
+    --color-shadow-black: #{$color-shadow-black};
+    --color-shadow-dark: #{$color-shadow-dark};
+    --color-shadow-semidark: #{$color-shadow-semidark};
+    --color-shadow-darkgray: #{$color-shadow-darkgray};
+    --color-shadow-lightgray: #{$color-shadow-lightgray};
+    --color-shadow-semilight: #{$color-shadow-semilight};
+    --color-shadow-light: #{$color-shadow-light};
+    --color-shadow-white: #{$color-shadow-white};
+
+    // ============================== STATE
+    --color-state-success: #{$color-state-success};
+    --color-state-warning: #{$color-state-warning};
+    --color-state-error: #{$color-state-error};
+    --color-state-informative: #{$color-state-informative};
+
+    // ============================== TRANSPARENT COLORS
+    --color-transparent: #{$color-transparent};
+    --color-semi-transparent: #{$color-semi-transparent};
+
+    // ============================== LINEAR GRADIENTS
+    --gradient-logo: #{$gradient-logo};
+
+    // -------------------------------------------------- SHADOWS
+    --shadow-small: #{$shadow-small};
+    --shadow-medium: #{$shadow-medium};
+    --shadow-button: #{$shadow-button};
+
+    --shadow-round: #{$shadow-round};
+    --shadow-updown: #{$shadow-updown};
+    --shadow-sides: #{$shadow-sides};
+
+    // -------------------------------------------------- OTHER
+    // ============================== MARGIN & PADDING
+    --margin-small: #{$margin-small};
+    --margin-medium: #{$margin-medium};
+    --margin-big: #{$margin-big};
+
+    --margin-section: #{$margin-section};
+    --margin-title: #{$margin-title};
+    --margin-subtitle: #{$margin-subtitle};
+    --margin-screen: #{$margin-screen};
+
+    --padding-small: #{$padding-small};
+    --padding-medium: #{$padding-medium};
+    --padding-big: #{$padding-big};
+
+    --padding-button: #{$padding-button};
+
+    // ============================== FONT SIZES
+    --size-big: #{$size-big};
+    --size-title: #{$size-title};
+    --size-subtitle: #{$size-subtitle};
+    --size-content: #{$size-content};
+    --size-thirdtitle: #{$size-thirdtitle};
+    --size-label: #{$size-label};
+    --size-body: #{$size-body};
+
+    // ============================== FONT FAMILIES
+    --font-icons: "bootstrap-icons";
+    --font-poppins: "Poppins";
+    --font-raleway: "Raleway";
+    --font-roboto: "Roboto";
+
+    --font-cinzel: #{$font-Cinzel};
+    --font-tangerine: #{$font-Tangerine};
+    --font-opentext: #{$font-OpenText};
+    --font-pinyon: #{$font-PinyonScript};
+}
+
+// #endregion
+
+// #region ##################################################################################### MIXINS
+// ---------------------------------------------------------------------- BORDERS
+@mixin border($color: currentColor, $radius: inherit) {
+    border-width: 2px;
+    border-style: solid;
+    border-color: $color;
+    border-radius: $radius;
+}
+
+// ---------------------------------------------------------------------- SLIDE-SHOW ANIMATION
+@mixin slide($vv: null, $hh: null, $op: false, $tran: false) {
+    $t: 0%;
+    $r: 0%;
+    $b: 0%;
+    $l: 0%;
+
+    @if $vv ==top {
+        $b: 100%;
+    }
+
+    @else if $vv ==center {
+        $t: 50%;
+        $b: 50%;
+    }
+
+    @else if $vv ==bottom {
+        $t: 100%;
+    }
+
+    @if $hh ==left {
+        $r: 100%;
+    }
+
+    @else if $hh ==center {
+        $l: 50%;
+        $r: 50%;
+    }
+
+    @else if $hh ==right {
+        $l: 100%;
+    }
+
+    @if $tran {
+        @if $op {
+            transition: clip-path 0.25s ease-in, opacity 0.25s ease-in;
+        }
+
+        @else {
+            transition: clip-path 0.25s ease-in;
+        }
+    }
+
+    @if not $vv and not $hh {
+
+        // ABRIR
+        @if $op {
+            opacity: 1;
+        }
+    }
+
+    @else {
+
+        // CERRAR
+        @if $op {
+            opacity: 0;
+        }
+    }
+
+    clip-path: inset($t $r $b $l);
+}
+
+// ---------------------------------------------------------------------- GRID
+@mixin grid($size: 120px) {
+    display: grid;
+    justify-content: start;
+    align-items: start;
+
+    // grid-template-columns: minmax($size, auto) 35% minmax(25%, 1fr);
+    grid-template-columns: minmax($size, auto) 1fr;
+    grid-template-rows: 1fr;
+    gap: 0.75rem 0.5rem;
+}
+
+// ---------------------------------------------------------------------- GENERAL TRANSITIONS/ANIMATIONS
+@mixin gral-trans($items: null, $add: []) {
+    @if not $items {
+        $items: [box-shadow opacity color border-color border-radius];
+    }
+
+    $items: list.join($items, $add);
+    $temp: (
+    );
+
+@each $item in $items {
+    $temp: list.append($temp, $item 0.2s ease-out, comma);
+}
+
+transition: $temp;
+
+&::before {
+    transition: inherit;
+    transition-delay: inherit;
+
+    opacity: 0;
+    z-index: -1;
+}
+}
+
+// #endregion
+
+// #region ##################################################################################### RESETS
+// ---------------------------------------------------------------------- RESET ALL
+*,
+*::after,
+*::before {
+    // -------------------------------------------------- INITIALS
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    // -------------------------------------------------- REMOVE FOCUS
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+        outline: none;
+        transition: none;
+    }
+
+    &::-moz-focus-inner {
+        border: 0 !important;
+    }
+}
+
+// ---------------------------------------------------------------------- RESET PSEUDO
+::before,
+::after {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+}
+
+// ---------------------------------------------------------------------- RESET DOCUMENT
+html,
+body,
+#root {
+    width: 100%;
+    min-height: 100svh;
+
+    // -------------------------------------------------- INHERIT-ABLES
+    color: var(--color-shadow-black);
+    font-family: var(--font-poppins), Arial, Helvetica, sans-serif, serif;
+    font-size: $size-body;
+    background-color: var(--color-palette-beige);
+
+    scroll-behavior: smooth;
+}
+
+// ---------------------------------------------------------------------- ROOT ELEMENT
+#root {
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+
+    // -------------------------------------------------- CUSTOM BACKGROUND
+    background-color: var(--color-palette-blue-pastel); // WIP
+}
+
+// #endregion
+
+// #region ##################################################################################### GENERALS
+// ---------------------------------------------------------------------- DIV as simple wrapper
+.wrapper {
+    display: inline;
+}
+
+// ---------------------------------------------------------------------- SCREEN replacing DIV
+.as-div,
+.screen {
+    display: block;
+    flex-grow: 1;
+
+    margin: var(--margin-big);
+}
+
+// ---------------------------------------------------------------------- DISABLE POINTER EVENTS
+:disabled,
+.disabled {
+    // -------------------------------------------------- DISABLE PARENT
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    opacity: 0.5 !important;
+    pointer-events: none !important;
+
+    // -------------------------------------------------- DISABLE CHILDREN
+    * {
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+        pointer-events: none !important;
+
+        &.disabled,
+        &:disabled {
+            opacity: 1 !important;
+        }
+    }
+}
+
+// #endregion
+
+// #region ##################################################################################### SCROLLBAR
+// ---------------------------------------------------------------------- FIREFOX
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-palette-golden) var(--color-palette-beige);
+}
+
+// ---------------------------------------------------------------------- WEBKIT
+* {
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    // -------------------------------------------------- TRACK
+    &::-webkit-scrollbar-track {
+        background-color: var(--color-palette-beige);
+
+        &:hover {
+            background-color: var(--color-shadow-light);
+        }
+    }
+
+    // -------------------------------------------------- THUMB
+    *::-webkit-scrollbar-thumb {
+        background-color: var(--color-palette-brown);
+        border: 2px solid var(--color-palette-beige);
+
+        &:hover {
+            background-color: mix($color-palette-golden, $color-shadow-light, 85%);
+            border-color: var(--color-shadow-light);
+        }
+
+        &:active {
+            background-color: mix($color-palette-golden, $color-shadow-light, 65%);
+        }
+    }
+}
+
+// #endregion
+
+// #region ##################################################################################### UTILITY CLASSES
+// ---------------------------------------------------------------------- NO SELECTABLE
+.no-selectable,
+button,
+a {
+    user-select: none;
+
+    * {
+        user-select: none;
+    }
+}
+
+// ---------------------------------------------------------------------- Z INDEX AUTO
+.z-index-auto {
+    z-index: inherit;
+
+    * {
+        z-index: inherit;
+    }
+}
+
+// ---------------------------------------------------------------------- BOOTSTRAP ICONS
+.icons {
+    font-family: var(--font-icons);
+}
+
+// ---------------------------------------------------------------------- PENDING DATA
+.loading {
+    cursor: wait !important;
+
+    * {
+        cursor: wait !important;
+    }
+}
+
+// ---------------------------------------------------------------------- REVERSED
+.reversed {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+// ---------------------------------------------------------------------- FLEX ROW CENTER
+.flex-row-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+// ---------------------------------------------------------------------- FLEX COLUMN CENTER
+.flex-col-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+// ---------------------------------------------------------------------- FLEX COLUMN BETWEEN
+.flex-col-betw {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+// ---------------------------------------------------------------------- BOLD
+.bold {
+    font-weight: 700;
+}
+
+// ---------------------------------------------------------------------- CENTERED
+.centered {
+    text-align: center;
+}
+
+// ---------------------------------------------------------------------- HIDDEN
+.hidden,
+.hide {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+// ---------------------------------------------------------------------- NO RESULT
+.no-results {
+    margin-top: 5rem;
+    text-align: center;
+}
+
+// ---------------------------------------------------------------------- TEXT ELLIPSIS
+.text-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: pre;
+}
+
+// ---------------------------------------------------------------------- REMARK
+.remark {
+    backdrop-filter: blur(5px) brightness(1.25);
+}
+
+// #endregion
+
+// #region ##################################################################################### TITLES
+// ---------------------------------------------------------------------- TITLE - H1
+h1,
+.title,
+.as-h1 {
+    margin: var(--margin-title);
+    padding: 0;
+
+    color: var(--color-palette-brown);
+    font-family: var(--font-tangerine);
+    font-size: var(--size-title);
+    font-weight: 700;
+
+    line-height: 1;
+    font-variant: normal;
+    text-align: center;
+}
+
+// ---------------------------------------------------------------------- SUBTITLE - H2
+h3,
+.subtitle,
+.as-h3,
+legend {
+    width: max(75%, 20rem);
+    margin: var(--margin-subtitle);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+
+    font-family: var(--font-raleway);
+    font-weight: 300;
+    font-size: var(--size-content);
+
+    color: var(--color-shadow-black);
+    text-align: center;
+    line-height: 1;
+    font-variant: normal;
+}
+
+legend {
+    width: auto;
+}
+
+// ---------------------------------------------------------------------- THIRD TITLE - H3
+h2,
+.third-title,
+.as-h2 {
+    width: 100%;
+    height: min-content;
+    margin: var(--margin-subtitle);
+    padding: var(--padding-medium);
+
+    color: var(--color-palette-brown);
+    font-family: var(--font-tangerine);
+    font-size: var(--size-subtitle);
+    font-weight: 700;
+
+    font-variant: normal;
+    line-height: 1;
+    text-align: center;
+    letter-spacing: 4px;
+}
+
+// #endregion
+
+// #region ##################################################################################### FORM ELEMENTS
+// ---------------------------------------------------------------------- FORM
+form {
+    margin: $margin-big;
+}
+
+// ---------------------------------------------------------------------- FIELDSET
+fieldset,
+.fieldset {
+    margin: $margin-big;
+    padding: $padding-medium;
+    padding-top: 0.2em;
+
+    @include border(var(--color-palette-brown), 0.5rem);
+
+    background-color: mix($color-shadow-light, transparent, 50%);
+
+    @include grid();
+
+    &:invalid {
+        color: var(--color-classic-red);
+        border-color: var(--color-classic-red);
+    }
+}
+
+// ---------------------------------------------------------------------- CRUD SUB-FIELDSET
+.sub-fieldset {
+    @include grid(0px);
+
+    grid-column: 2 / -1;
+
+    margin-bottom: 1rem;
+}
+
+// ---------------------------------------------------------------------- LABELS
+label,
+.as-label {
+    margin: 0 0.5rem;
+
+    color: var(--color-palette-brown);
+    font-family: var(--font-poppins);
+    font-weight: 300;
+    text-align: right;
+
+    @include gral-trans();
+
+    &.invalid {
+        color: var(--color-palette-brown);
+        border-color: var(--color-classic-red);
+    }
+}
+
+// ---------------------------------------------------------------------- INPUT WARNING
+.warning {
+    margin: 0 0.5rem;
+    color: var(--color-classic-red);
+    position: relative;
+    cursor: help;
+    user-select: none;
+    vertical-align: top;
+    z-index: 5;
+
+    &:hover .floating {
+        @include slide(null, null, true, false);
+    }
+
+    .floating {
+        position: absolute;
+        padding: $padding-medium;
+
+        @include border(currentColor, 1em);
+        border-top-left-radius: 0;
+
+        background-color: mix($color-palette-cream, $color-palette-beige, 25%);
+
+        top: 50%;
+        left: 100%;
+        width: max-content;
+        max-width: 30vw;
+        white-space: pre-line;
+
+        z-index: -1;
+        @include slide(top, left, true, true);
+    }
+}
+
+// #endregion
+
+// #region ##################################################################################### INPUTS
+// ---------------------------------------------------------------------- TRANSITIONS
+button,
+input,
+a,
+.dropdown,
+.nav-item,
+.input,
+select,
+textarea {
+    @include gral-trans();
+}
+
+// ---------------------------------------------------------------------- SELECT, INPUT, TEXTAREA
+input,
+select,
+textarea,
+.input {
+    padding: $padding-small;
+
+    font-family: var(--font-poppins);
+    font-weight: 400;
+    font-size: 0.8rem;
+
+    --priv-color: var(--color-palette-blue-ultra);
+
+    background-color: var(--color-shadow-white);
+    color: var(--color-palette-brown);
+    @include border($color-palette-brown, 0.05rem);
+    border-radius: 0.7rem;
+    outline: none;
+
+    // max-width: 70%;
+    min-width: 10ch;
+
+    // -------------------------------------------------- CHECKBOX - RADIO BUTTONS
+    &[type="checkbox"],
+    &[type="radio"] {
+        width: 1.5rem;
+        height: 1.5rem;
+        min-width: 0;
+
+        border-radius: 0;
+        vertical-align: text-bottom;
+        margin: 0 0.25rem;
+        padding: 0;
+
+        position: relative;
+        appearance: none;
+    }
+
+    &[type="checkbox"] {
+        &::after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        &:checked::after {
+            content: "✔️";
+        }
+    }
+
+    &[type="radio"] {
+        border-radius: 50%;
+
+        &::after {
+            content: "";
+            border-radius: inherit;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-palette-blue);
+            transform: scale(0);
+            transform-origin: center center;
+            @include gral-trans(null, [transform]);
+        }
+
+        &:checked::after {
+            transform: scale(0.5);
+        }
+    }
+
+    // -------------------------------------------------- PLACEHOLDER
+    &::placeholder {
+        opacity: 75%;
+        letter-spacing: 1px;
+        font-kerning: none;
+        color: var(--color-palette-brown);
+    }
+
+    // -------------------------------------------------- HOVER
+    &:hover,
+    &.loading {
+        --priv-color: var(--color-shadow-lightgray);
+
+        &:invalid {
+            --priv-color: var(--color-palette-beige);
+        }
+
+        box-shadow: 0 0 0px 2px var(--priv-color);
+    }
+
+    // -------------------------------------------------- INVALID
+    &:invalid {
+        --priv-color: var(--color-palette-brown);
+        box-shadow: 0 0 0px 2px var(--priv-color);
+    }
+
+    // -------------------------------------------------- FOCUS
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+        --priv-color: var(--color-palette-brown);
+
+        &:invalid {
+            --priv-color: var(--color-classic-red);
+        }
+
+        box-shadow: 0 0 0px 2px var(--priv-color);
+    }
+}
+
+// ---------------------------------------------------------------------- ANCHOR TAGS
+a {
+    text-decoration: none;
+    color: var(--color-classic-pink);
+
+    &:hover,
+    &.loading {
+        color: var(--color-classic-blue);
+        text-decoration: underline;
+    }
+
+    &:active,
+    &.loading {
+        color: var(--color-palette-blue-light);
+    }
+}
+
+// ---------------------------------------------------------------------- TEXT AREA
+textarea {
+    resize: vertical;
+    min-height: 3ch;
+    max-height: 15ch;
+}
+
+// ---------------------------------------------------------------------- OPTIONS WRAPPER
+.options-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.25rem 1rem;
+
+    .input[type="radio"] {
+        margin: 0 0.75rem;
+    }
+}
+// #endregion
+
+// #region ##################################################################################### BUTTONS
+// ---------------------------------------------------------------------- GENERAL
+button,
+.dropdown,
+.as-button,
+.nav-item {
+    margin: $margin-small;
+    padding: $padding-button;
+
+    font-family: var(--font-poppins);
+    font-weight: 500;
+    text-decoration: none;
+
+    @include border(currentColor, 1rem);
+    @include gral-trans(null, background-color);
+
+    // -------------------------------------------------- DEFAULT STYLE
+    background-color: var(--color-shadow-white);
+    border-radius: 0.5rem;
+    border: 2px solid var(--color-palette-brown);
+    color: var(--color-palette-brown);
+    height: 2rem;
+
+    // -------------------------------------------------- HOVER
+    &:hover,
+    &.loading {
+        cursor: pointer;
+        text-decoration: none;
+        opacity: 0.7;
+    }
+
+    // -------------------------------------------------- ACTIVE
+    &:active,
+    &.loading {
+        transition-delay: -0.2s;
+        opacity: 0.9;
+        transform: scale(0.95);
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - CLEAR WHITE
+    &.clear {
+        background-color: transparent;
+        color: var(--color-palette-brown);
+
+        &:hover,
+        &.loading {
+            cursor: pointer;
+            background-color: mix($color-palette-blue-light, transparent, 20%);
+            color: var(--color-palette-blue-light);
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - LOGIN
+    &.login {
+        background-color: var(--color-palette-brown);
+        color: var(--color-shadow-white);
+        border: none;
+        border-radius: 0.25rem;
+        box-shadow: var(--shadow-button);
+
+        &:active,
+        &.loading {
+            box-shadow: inset $shadow-small;
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - LOGOUT
+    &.logout {
+        background-color: var(--color-palette-brown);
+        color: var(--color-shadow-white);
+        border: none;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-button);
+
+        &:active,
+        &.loading {
+            box-shadow: inset $shadow-small;
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - PRIMARY
+    &.primary,
+    &.success {
+        background-color: var(--color-state-success);
+        color: var(--color-shadow-white);
+        border: none;
+        border-radius: 0.25rem;
+        box-shadow: var(--shadow-button);
+
+        &:active,
+        &.loading {
+            box-shadow: inset $shadow-small;
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - SECONDARY
+    &.secondary,
+    &.warning {
+        background-color: #ff8d01;
+        color: var(--color-shadow-white);
+        border: none;
+        border-radius: 0.25rem;
+        box-shadow: var(--shadow-button);
+
+        &:active,
+        &.loading {
+            box-shadow: inset $shadow-small;
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - CLEAR
+    &.danger {
+        background-color: var(--color-classic-red);
+        color: var(--color-shadow-white);
+        border: none;
+        border-radius: 0.25rem;
+        box-shadow: var(--shadow-button);
+
+        &:active,
+        &.loading {
+            box-shadow: inset $shadow-small;
+        }
+    }
+
+    // -------------------------------------------------- CUSTOM STYLES - BIG BUTTON
+    &.big {
+        font-size: 1rem;
+    }
+}
+// #endregion
+
+// #region ##################################################################################### GLOBAL NAVIGATION
+// ---------------------------------------------------------------------- NAVBAR
+nav,
+.navbar {
+    position: sticky;
+    display: flex;
+    top: 0px;
+    min-height: 6vh;
+    padding: 0.4rem;
+    justify-content: space-between;
+
+    background-color: var(--color-shadow-white);
+    border-bottom: 3px solid var(--color-palette-brown);
+    align-items: center;
+    z-index: 10;
+
+    // -------------------------------------------------- LOGO
+    .logo,
+    .logo-responsive {
+        height: 4rem;
+        box-shadow: var(--shadow-button);
+        border-radius: 2.5rem;
+        // margin: 0.5rem 1.5rem;
+
+        &-responsive {
+            display: none;
+            height: 50px;
+        }
+    }
+
+    // -------------------------------------------------- LOGOUT RESPONSIVE
+    .logout-resp {
+        display: none;
+        background-size: 70%;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: 0;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    // -------------------------------------------------- MEDIA QUERY
+    @media screen and (max-width: 750px) {
+        .logo {
+            display: none;
+        }
+
+        .logo-responsive {
+            display: initial;
+        }
+
+        .button.logout {
+            display: none;
+        }
+
+        .logout-resp {
+            display: block;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------- POPUP
+.popup {
+    position: fixed;
+    z-index: 100;
+    bottom: 0;
+    left: 0%;
+    width: 100%;
+    min-height: 5rem;
+    // border-radius: 0 1rem 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    margin: 0;
+    // padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    font-family: var(--font-raleway);
+    font-weight: 600;
+    background-color: var(--color-shadow-white);
+
+    img {
+        padding: 0 1.5rem;
+    }
+
+    .close-button {
+        margin: 0;
+        border: none;
+        background-color: transparent;
+        margin-left: auto;
+        font-size: 2rem;
+        height: 100%;
+        color: var(--color-shadow-lightgray);
+    }
+
+    // -------------------------------------------------- POPUP STATE (default) - Success
+    --state-color: var(--color-state-success);
+    color: var(--color-classic-green);
+    border-left: 1.5rem solid;
+    border-left-color: var(--state-color);
+    border-top: 2px solid;
+
+    user-select: auto;
+
+    @include slide(null, null, true, true);
+
+    // -------------------------------------------------- POPUP STATE - Closed
+    &.close {
+        @include slide(null, left, false, false);
+    }
+
+    // -------------------------------------------------- POPUP STATE - Warning
+    &.warning {
+        color: var(--color-classic-orange);
+        --state-color: var(--color-classic-yellow);
+        background-color: var(--color-palette-beige);
+    }
+
+    // -------------------------------------------------- POPUP STATE - Error
+    &.error {
+        color: var(--color-classic-red);
+        --state-color: var(--color-classic-red);
+        background-color: var(--color-palette-pink);
+    }
+
+    // -------------------------------------------------- POPUP STATE - Informative
+    &.informative {
+        color: var(--color-palette-blue-royal);
+        --state-color: var(--color-classic-cyan);
+        background-color: var(--color-palette-blue-light);
+    }
+
+    // -------------------------------------------------- RESPONSIVE
+    @media screen and (max-width: 500px) {
+
+        img,
+        .close-button {
+            padding: 0 0.5rem;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------- FOOTER
+footer,
+.footer {
+    width: 100%;
+    min-height: 2rem;
+    margin-top: auto;
+
+    background-color: var(--color-palette-blue-royal);
+    background: var(--gradient-logo);
+    border-top: 2px solid var(--color-palette-blue-light);
+
+    text-align: right;
+    color: var(--color-palette-blue);
+    padding: 1rem 0 0.5rem 0;
+
+    a,
+    a:hover {
+        color: var(--color-palette-blue-pastel);
+    }
+
+    a:active {
+        color: var(--color-palette-blue-light);
+    }
+}
+// #endregion
+
+// #region ##################################################################################### ANIMATIONS
+// ---------------------------------------------------------------------- SPINNER - STYLES
+.spinner {
+    position: fixed;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+
+    font-family: var(--font-raleway);
+    font-size: 2.25rem;
+    text-transform: uppercase;
+    color: var(--color-palette-blue);
+    user-select: none;
+
+    animation: fade-in 2s ease-out 0s;
+
+    // -------------------------------------------------- BEFORE
+    &::before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--color-shadow-white);
+        opacity: 0.75;
+        z-index: -1;
+    }
+
+    // -------------------------------------------------- AFTER
+    &::after {
+        content: "";
+        position: relative;
+        color: var(--color-palette-blue-light);
+        width: 2.5rem;
+        height: 5rem;
+        translate: -50%;
+        border-top: 8px solid;
+        border-left: 8px solid;
+        border-bottom: 8px solid;
+        border-top-left-radius: 100px;
+        border-bottom-left-radius: 100px;
+        transform-origin: right center;
+        animation: anim-spinner 1s linear 0s infinite;
+    }
+}
+
+// ---------------------------------------------------------------------- SPINNER - ANIMATION
+@keyframes anim-spinner {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+// ---------------------------------------------------------------------- FADE IN
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+// #endregion

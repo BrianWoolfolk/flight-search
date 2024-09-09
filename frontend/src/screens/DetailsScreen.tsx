@@ -14,6 +14,7 @@ import {
 } from "react-router-dom";
 import { APIData } from "@utils/ClassTypes";
 import ResultCard from "@components/ResultCard";
+import { Helmet } from "react-helmet";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -66,7 +67,11 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
 
   // ---------------------------------------------------------------------- RETURN
   return (
-    <div className={props.className}>
+    <div className={props.className + " screen"}>
+      <Helmet>
+        <title>Details Screen | Flight Search</title>
+      </Helmet>
+
       <h1>DETAILS SCREEN</h1>
 
       <ScrollToTopOnMount />
@@ -83,6 +88,10 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
         _dictionary={loaderData.dictionaries!}
         _item={parseNumber(index || "")}
         _disabled
+        _style={{
+          marginLeft: 0,
+          marginRight: 0,
+        }}
       />
 
       <div className="detail-summary">

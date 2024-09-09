@@ -124,8 +124,8 @@ const ResultCard = styled(_ResultCard).attrs(
         flex-direction: column;
       }
 
-      &:first-child {
-        border-bottom: 2px solid black;
+      &:nth-child(2) {
+        border-top: 2px solid black;
       }
     }
 

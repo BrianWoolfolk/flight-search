@@ -57,7 +57,6 @@ const NotFoundScreen = styled(_NotFoundScreen).attrs(
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #ffff;
 
     .img-not-found {
       width: 300px;
@@ -67,6 +66,7 @@ const NotFoundScreen = styled(_NotFoundScreen).attrs(
     h4 {
       color: var(--color-palette-brown);
       font-weight: 400;
+      font-size: 24px;
     }
 
     ${parseCSS(props._style)}

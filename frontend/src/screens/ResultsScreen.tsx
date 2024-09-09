@@ -6,6 +6,7 @@ import { APIData } from "@utils/ClassTypes";
 import Input from "@components/Input";
 import { useCallback, useState } from "react";
 import { getDuration } from "scripts/FlightFunctions";
+import { Helmet } from "react-helmet";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -99,25 +100,40 @@ const _ResultsScreen = (props: ResultsScreenProps) => {
   // ---------------------------------------------------------------------- RETURN INCORRECT DATA
   if (!loaderData?.data?.length || !loaderData?.dictionaries) {
     return (
-      <div className={props.className}>
+      <div className={props.className + " screen"}>
+        <Helmet>
+          <title>No Flights Found | Flight Search</title>
+        </Helmet>
+
         <h1>Results Screen</h1>
 
-        <h2>No flights found</h2>
-        <Link className="as-button warning" to="/search">
-          Search another
-        </Link>
+        <h3>No flights found</h3>
+
+        <div className="flex-row-center">
+          <Link className="as-button warning" to="/search">
+            Search another
+          </Link>
+        </div>
       </div>
     );
   }
 
   // ---------------------------------------------------------------------- RETURN
   return (
-    <div className={props.className}>
-      <Link to={"/search"}>{"< Return to Search"}</Link>
+    <div className={props.className + " screen"}>
+      <Helmet>
+        <title>See Results | Flight Search</title>
+      </Helmet>
 
       <h1>Results Screen</h1>
 
-      <div className="sort-controls">
+      <Link to={"/search"} className="as-button login">
+        {"< Return to Search"}
+      </Link>
+
+      <fieldset>
+        <legend>Search controls</legend>
+
         <Input
           _label="Sort by price"
           _store={LS}
@@ -150,7 +166,7 @@ const _ResultsScreen = (props: ResultsScreenProps) => {
         />
 
         <button onClick={handleFilters}>Apply filters</button>
-      </div>
+      </fieldset>
 
       {originalData}
 
@@ -175,6 +191,13 @@ const ResultsScreen = styled(_ResultsScreen).attrs(
 
     .search-status {
       margin: var(--margin-big);
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-around;
     }
 
     ${parseCSS(props._style)}
