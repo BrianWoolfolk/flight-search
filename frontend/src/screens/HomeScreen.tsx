@@ -1,8 +1,6 @@
 import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
 import AlertMessage from "@components/AlertMessage";
-import NavBar from "@components/Navbar";
-import { GS } from "App";
 import { Outlet, useNavigation } from "react-router";
 import NotFoundScreen from "./NotFoundScreen";
 
@@ -21,17 +19,14 @@ const _HomeScreen = (props: HomeScreenProps) => {
   // ---------------------------------------------------------------------- RETURN
   return (
     <>
-      <NavBar />
       <AlertMessage />
 
       {props.isNotFound ? <NotFoundScreen /> : <Outlet />}
 
-      {GS.firstTime ? (
-        <div className="spinner">Buscando sesiones de usuario...</div>
-      ) : navigation.state === "loading" ? (
-        <div className="spinner">Cargando...</div>
+      {navigation.state === "loading" ? (
+        <div className="spinner">Loading...</div>
       ) : navigation.state === "submitting" ? (
-        <div className="spinner">Enviando...</div>
+        <div className="spinner">Submitting...</div>
       ) : (
         <></>
       )}

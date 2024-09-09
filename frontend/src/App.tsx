@@ -3,14 +3,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useRefresh } from "scripts/FunctionsBundle";
 import * as _T from "@utils/ClassTypes";
-import { useEffect } from "react";
 import HomeScreen from "@screens/HomeScreen";
 import SearchFlightScreen from "@screens/SearchFlightScreen";
 import LandingScreen from "@screens/LandingScreen";
 import ResultsScreen from "@screens/ResultsScreen";
 import DetailsScreen from "@screens/DetailsScreen";
-
-// import JSN from "@utils/exampleresponse.json";
 
 // ---------------------------------------------------------------------- TYPESCRIPT IMPORTS
 type _LoaderFunctionArgs = import("react-router-dom").LoaderFunctionArgs;
@@ -35,13 +32,9 @@ async function loadFlight(req: _LoaderFunctionArgs) {
   const url = new URL(req.request.url);
   const composedUrl = BACKEND_URL + "/searchFlight" + url.search;
 
-  // console.log("loader entered: ", JSN);
-
   let search = "";
   if (GS.cache?.formData) search = GS.cache.formData;
   GS.cache = {};
-
-  // if (1) return { data: JSN, search };
 
   // ============================== GET DATA
   const response = await fetch(composedUrl).catch(() => null);
@@ -55,7 +48,6 @@ async function loadFlight(req: _LoaderFunctionArgs) {
   }
 
   // INVALID DATA
-  console.log(response);
   if (!response.ok) throw response;
 
   // RETURN DATA
@@ -64,28 +56,11 @@ async function loadFlight(req: _LoaderFunctionArgs) {
 }
 // #endregion
 
-// #region ##################################################################################### FUNCIONES ACTIONS
-// ---------------------------------------------------------------------- TO BE DEFINED
-// #endregion
-
 // #region ##################################################################################### MAIN APPLICATION
 function App() {
   // ---------------------------------------------------------------------- GLOBAL STATE
   const [refresh] = useRefresh();
   GS.refresh = refresh;
-
-  // ---------------------------------------------------------------------- FIRST TIME
-  useEffect(() => {
-    const a = (GS.cache = setTimeout(() => {
-      GS.firstTime = false;
-      GS.refresh();
-    }, 1000));
-
-    return () => {
-      GS.firstTime = false;
-      clearTimeout(a);
-    };
-  }, []);
 
   // ---------------------------------------------------------------------- RETURN
   return (
@@ -105,7 +80,6 @@ function App() {
             // -------------------------------------------------- SEARCH PAGE
             {
               path: "search",
-              loader: undefined,
               element: <SearchFlightScreen />,
             },
             // -------------------------------------------------- RESULTS PAGE

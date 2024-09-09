@@ -118,7 +118,7 @@ export class Global {
   alert: _AlMsg = {};
   /** `() => void` - Función para accionar manualmente las alertas. */
   alertRef: () => void = () => {
-    console.log((this.alert._type || "Alerta") + ":\n" + this.alert._message);
+    console.log((this.alert._type || "Alert") + ":\n" + this.alert._message);
   };
   /** Actualiza las alertas y las ejecuta `alert = param` + `alertRef()`. */
   readonly setAlert = (p: _AlMsg) => {

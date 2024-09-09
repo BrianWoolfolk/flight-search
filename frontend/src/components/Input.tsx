@@ -543,10 +543,10 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
   if (props._preset === "email") {
     props = {
       _validator: /^[\w-.]+@(?:[\w-]+\.)+[\w-]{2,4}$/,
-      _validator_text: "Ingrese un email válido.",
+      _validator_text: "Enter a valid email.",
       _charset: /[^\w-.@]/,
       _charset_text:
-        "Solo se admiten letras, números y los siguientes caracteres: _ @ . -",
+        "Only allows for letters, numbers and the characters: _ @ . -",
       _required: "*",
       _width: "m",
       ...props,
@@ -555,9 +555,9 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     letterSpacing = "1px";
     props = {
       _validator: /^-?[\d]+$/,
-      _validator_text: "Ingrese un número entero válido.",
+      _validator_text: "Enter a valid integer.",
       _charset: /[^-\d]/,
-      _charset_text: "Solo se admiten números y el signo negativo -",
+      _charset_text: "Only allows for numbers and hyphen: -",
       _required: "*",
       _as_number: true,
       _width: "xs",
@@ -567,10 +567,9 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     letterSpacing = "1px";
     props = {
       _validator: /^-?[\d]+(?:\.\d+)?$/,
-      _validator_text: "Ingrese un número válido.",
+      _validator_text: "Enter a valid number.",
       _charset: /[^-\d]/,
-      _charset_text:
-        "Solo se admiten números, punto decimal . y el signo negativo -",
+      _charset_text: "Only allows for numbers, period . and hyphen: -",
       _required: "*",
       _as_number: true,
       _width: "xs",
@@ -580,10 +579,9 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     letterSpacing = "1px";
     props = {
       _validator: /^\$?\d{1,3}(?:,\d{3})*(?:\.\d+)?$|^\$?\d+(?:\.\d+)?$/,
-      _validator_text: "Ingrese una cantidad monetaria válida.",
+      _validator_text: "Enter a valid money quantity.",
       _charset: /[^$\d.,]/,
-      _charset_text:
-        "Solo se admiten números, punto decimal . y los signos $ , ",
+      _charset_text: "Only allows for numbers, period . and characters: $ , ",
       _required: "*",
       _as_number: true,
       _width: "s",
@@ -593,9 +591,9 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     letterSpacing = "1px";
     props = {
       _validator: /^(?:\+?(?:-| )?\d){10,13}$/,
-      _validator_text: "Ingrese número de teléfono válido.",
+      _validator_text: "Enter a valid phone number.",
       _charset: /[^\d- ]/,
-      _charset_text: "Solo se admiten números y el signo -",
+      _charset_text: "Only allows for numbers and hyphen: -",
       _required: "*",
       _width: "s",
       ...props,
@@ -604,16 +602,15 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     props = {
       _charset: /[^A-Z ñáéíóú'ü.()+]/i,
       _charset_text:
-        "Solo se admiten letras, espacios, tildes (á ñ ü) y los caracteres ' . ( ) +",
+        "Only allows for letters, whitespaces, latin letters (á ñ ü) and characters: ' . ( ) +",
       _required: "*",
-      _tooltip:
-        "Ingrese un nombre completo válido, separado con espacios donde sea necesario.",
+      _tooltip: "Enter a valid full name, separated by whitespaces if needed.",
       _width: "l",
       ...props,
     };
   } else if (props._preset === "date") {
     props = {
-      _tooltip: "Ingrese una fecha válida.",
+      _tooltip: "Enter a valid date.",
       _required: "*",
       _type: "date",
       _width: "s",
@@ -621,14 +618,14 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
     };
   } else if (props._preset === "two names") {
     props = {
-      _placeholder: "Ejemplo: 'Nombre apellido y nombre apellido'",
+      _placeholder: "Example: 'Name lastname and name lastname'",
       _type: "textarea",
       _charset: /[^A-Z ñáéíóú'ü,.&\n()+]/i,
       _charset_text:
-        "Solo se admiten letras, espacios, tildes (á ñ ü) y los caracteres ' . , & ( ) +",
-      _validator: /^[^&,]+(?:,|&| y )[^,&]+$/i,
+        "Only allows for letters, whitespaces, latin letters (á ñ ü) and characters: ' . , & ( ) +",
+      _validator: /^[^&,]+(?:,|&| and )[^,&]+$/i,
       _validator_text:
-        "Ingrese un par de nombres separados por alguno de los siguientes: 'y' ',' '&'.",
+        "Enter a pair of full names separated by one of the following: 'and' ',' '&'.",
       _required: "*",
       _width: "l",
       ...props,
@@ -654,8 +651,7 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
   }
 
   if (props._required === "-" || props._disabled) props._required = undefined;
-  else if (props._required === "*")
-    props._required = "Este campo no puede quedar vacío.";
+  else if (props._required === "*") props._required = "This field is required.";
 
   if (!props._name) {
     props._name = parseID(props._label || "", true);
@@ -681,8 +677,8 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
   if (props._type === "checkbox" || props._options) {
     ww = "";
     props = {
-      _label: "Seleccione:",
-      _placeholder: "Seleccione",
+      _label: "Select:",
+      _placeholder: "Select",
       _validator_text: "",
       _charset_text: "",
       ...props,
@@ -690,15 +686,15 @@ const Input = styled(_Input).attrs((props: InputProps): InputProps => {
   }
 
   return {
-    _label: "Nuevo input:",
+    _label: "New input:",
     _type: "text",
-    _placeholder: "<Vacío>",
-    _validator_text: "El valor ingresado no es válido.",
-    _charset_text: "Se puede ingresar cualquier texto.",
+    _placeholder: "<Empty>",
+    _validator_text: "The current value is not valid.",
+    _charset_text: "Allows any kind of text.",
     _tooltip: "",
     _range_text: [
-      "No se permiten valores por debajo de ",
-      "No se permiten valores por encima de ",
+      "Does not allow for values below ",
+      "Does not allow for values above ",
     ],
     _style: {
       width: ww,

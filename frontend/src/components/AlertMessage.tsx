@@ -57,10 +57,10 @@ const _AlertMessage = (props: _Base) => {
       {GS.alert._type === "error"
         ? "Error! "
         : GS.alert._type === "warning"
-        ? "Advertencia! "
+        ? "Warning! "
         : GS.alert._type === "informative"
-        ? "Información "
-        : "Realizado con éxito! "}
+        ? "Information "
+        : "Success! "}
       {GS.alert._message}
       {GS.alert._hideButton && (
         <button className="close-button" onClick={() => setClose(true)}>
