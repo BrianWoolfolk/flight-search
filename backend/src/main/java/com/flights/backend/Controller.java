@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class Controller {
             @RequestParam( required = false ) String returnDate,
             @RequestParam( defaultValue = "1" ) int adults,
             @RequestParam( defaultValue = "false") boolean nonStop,
-            @RequestParam( defaultValue = "USD" ) Currency currencyCode
+            @RequestParam( defaultValue = "USD" ) Currency currencyCode,
+            @RequestParam( defaultValue = "1" ) int pag
     ) {
         // CONVERT VALUES
         FlightSearchQuery req = new FlightSearchQuery(
@@ -34,7 +36,7 @@ public class Controller {
                 currencyCode);
 
         // MAKE REQUEST
-        String res = service.searchFlight(req);
+        String res = service.searchFlight(req, pag);
 
         // RETURN RESPONSE
         return new ResponseEntity<>(res, HttpStatus.OK);

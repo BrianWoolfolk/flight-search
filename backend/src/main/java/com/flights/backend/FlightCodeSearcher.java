@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class FlightCodeSearcher {
     // AMADEUS API NEEDS A 100ms WINDOW BETWEEN REQUESTS
     private static final int REQUEST_TIMEOUT = 100;
     private final List<ResponseEntity<String>> responses = new ArrayList<>();
+    private ResponseEntity<String> extraCodes = null;
 
     private final RestTemplate restTemplate;
     private final JsonService jsonService;
@@ -41,26 +43,54 @@ public class FlightCodeSearcher {
         HttpEntity<String> request = new HttpEntity<>(headers);
 
         // CALL API FOR EVERY ITEM IN LIST
-        Runnable task = () -> {
-            // MAKE REQUEST IF STILL HAS NEXT
-            if (codes.hasNext()) {
-                ResponseEntity<String> resp = restTemplate.exchange(
-                    mainUrl + codes.next(),
-                    HttpMethod.GET,
-                    request,
-                    String.class
-                );
+        Runnable task = new Runnable() {
+            final List<String> notFoundCodes = new ArrayList<>();
 
-                responses.add(resp);
-            } else {
-                latch.countDown(); // let go
-                scheduler.shutdown();
+            @Override
+            public void run() {
+                // MAKE REQUEST IF STILL HAS NEXT
+                if (codes.hasNext()) {
+                    String code = codes.next();
+                    String sttr = mainUrl + "/v1/reference-data/locations/A" + code;
+
+                    try {
+                        ResponseEntity<String> resp = restTemplate.exchange(
+                            sttr,
+                            HttpMethod.GET,
+                            request,
+                            String.class
+                        );
+
+                        responses.add(resp); // GOOD RESPONSE
+                    } catch (HttpClientErrorException err) {
+                        notFoundCodes.add(code);
+                    }
+
+                } else {
+                    if (!notFoundCodes.isEmpty()) {
+                        try {
+                            extraCodes = restTemplate.exchange(
+                                    mainUrl + "/v1/reference-data/airlines?airlineCodes="
+                                            + String.join(",", notFoundCodes),
+                                    HttpMethod.GET,
+                                    request,
+                                    String.class
+                            );
+                        } catch (HttpClientErrorException err) {
+                            err.printStackTrace(); // Hopefully this won't happen, but is needed to not freeze the app
+                            System.out.println("Unexpected error in codes: " + err.getMessage());
+                        }
+                    } else extraCodes = null;
+
+                    latch.countDown(); // let go
+                    scheduler.shutdown();
+                }
             }
         };
 
         scheduler.scheduleAtFixedRate(task, 0, REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
         latch.await();
-        return jsonService.createLocationsObj(responses);
+        return jsonService.createLocationsObj(responses, extraCodes);
     }
 }
 

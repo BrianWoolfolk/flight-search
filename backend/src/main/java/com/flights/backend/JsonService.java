@@ -50,20 +50,11 @@ public class JsonService {
         // PICK INFO FROM ALL DATA ENTRIES
         JsonNode allData = root.get("data");
         ArrayNode pickedData = objectMapper.createArrayNode();
-        for (JsonNode entry : allData) {
-
-            // ONLY CHOSEN KEYS
-            ObjectNode newEntry = objectMapper.createObjectNode();
-            for (String key : flightDataKeys) newEntry.set(key, entry.get(key));
-
-            pickedData.add(newEntry);
-        }
-
-        // CREATE & RETURN FILTERED OBJECT
         ObjectNode newRoot = objectMapper.createObjectNode();
-        newRoot.set("data", pickedData);
-        newRoot.set("dictionaries", root.get("dictionaries"));
+        newRoot.set("meta", root.get("meta"));
 
+        // COPY ALL DICTIONARIES
+        newRoot.set("dictionaries", root.get("dictionaries"));
         if (locationsObj != null) {
             JsonNode dPath = newRoot.path("dictionaries");
 
@@ -72,6 +63,17 @@ public class JsonService {
                 dictObj.replace("locations", locationsObj);
             }
         }
+
+        // COPY & FILTER ALL REMAINING DATA
+        for (JsonNode entry : allData) {
+
+            // ONLY CHOSEN KEYS
+            ObjectNode newEntry = objectMapper.createObjectNode();
+            for (String key : flightDataKeys) newEntry.set(key, entry.get(key));
+
+            pickedData.add(newEntry);
+        }
+        newRoot.set("data", pickedData);
 
         return newRoot;
     }
@@ -110,7 +112,10 @@ public class JsonService {
         return newEntry;
     }
 
-    public JsonNode createLocationsObj(List<ResponseEntity<String>> fromResponses) {
+    public JsonNode createLocationsObj(
+            List<ResponseEntity<String>> fromResponses,
+            ResponseEntity<String> extraCodes
+    ) {
         ObjectNode locationsObj = objectMapper.createObjectNode();
 
         // FOR EVERY RESPONSE ADD: "<IATA CODE>": { <info about IATA code> }
@@ -119,17 +124,68 @@ public class JsonService {
             locationsObj.set(objData.get("iataCode").asText(), objData);
         }
 
+        if (extraCodes != null) {
+            JsonNode codesData = readBody(extraCodes).get("data");
+            if (codesData.isArray()) {
+                for (JsonNode item : codesData) {
+                    ObjectNode newItem = objectMapper.createObjectNode();
+                    String iata = "Unknown";
+                    if (item.get("icaoCode") != null) {
+                        iata = item.get("icaoCode").asText();
+                    } else if (item.get("iataCode") != null) {
+                        iata = item.get("iataCode").asText();
+                    }
+
+                    String name = "Unknown";
+                    if (item.get("commonName") != null) {
+                        name = item.get("commonName").asText();
+                    } else if (item.get("businessName") != null) {
+                        name = item.get("businessName").asText();
+                    }
+
+                    // AS IT APPEARS, AMADEUS HAS NOT THIS INFO YET
+                    newItem.put("id", iata);
+                    newItem.put("name", name + "~");
+                    newItem.put("iataCode", iata);
+                    newItem.put("cityName", name + "~");
+                    newItem.put("cityCode", iata);
+                    newItem.put("countryCode", iata);
+
+                    // ADD INFO
+                    locationsObj.set(iata, newItem);
+                }
+            }
+        }
+
         // THIS CAN BE ADDED AS "locations": <locationsObj>
         return locationsObj;
     }
 
     public Iterator<String> pickLocationsFromDictionary(JsonNode root) {
         JsonNode dict = root.get("dictionaries");
-        if (dict.isNull() || dict.isEmpty()) return null;
+        if (dict == null || dict.isEmpty()) return null;
 
         dict = dict.get("locations");
-        if (dict.isNull() || dict.isEmpty()) return null;
+        if (dict == null || dict.isEmpty()) return null;
 
         return dict.fieldNames();
+    }
+
+    public JsonNode getPagination(JsonNode root, int page, int pageSize) {
+        ArrayNode dataJson = (ArrayNode) root.get("data");
+        ArrayNode smallData = objectMapper.createArrayNode();
+        page = Math.max(1, Math.min(page, 10));
+
+        for (int i = (page - 1) * pageSize; i < page * pageSize; i++) {
+            JsonNode item = dataJson.get(i);
+            if (item != null && !item.isEmpty())
+                smallData.add(item);
+        }
+
+        ObjectNode newObjNode = objectMapper.createObjectNode();
+        newObjNode.set("data", smallData);
+        newObjNode.set("dictionaries", root.get("dictionaries"));
+
+        return newObjNode;
     }
 }

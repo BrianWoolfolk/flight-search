@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleEverythingElse(Exception err) {
-        System.out.println("error at client request: " + err);
+        System.out.println("error in something: " + err);
         err.printStackTrace();
         return new ResponseEntity<>("Unknown error: " + err.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
