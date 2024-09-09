@@ -1,0 +1,14 @@
+version: '3'
+services:
+  backend:
+    build: ./backend
+    # image: flight-backend
+    ports:
+      - "8080:8080"
+  frontend:
+    build: ./frontend
+    # image: flight-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
