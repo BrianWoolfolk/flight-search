@@ -48,48 +48,61 @@ public class FlightCodeSearcher {
 
             @Override
             public void run() {
-                // MAKE REQUEST IF STILL HAS NEXT
-                if (codes.hasNext()) {
-                    String code = codes.next();
-                    String sttr = mainUrl + "/v1/reference-data/locations/A" + code;
+                try {
+                    // MAKE REQUEST IF STILL HAS NEXT
+                    if (codes.hasNext()) {
+                        String code = codes.next();
+                        String sttr = mainUrl + "/v1/reference-data/locations/A" + code;
 
-                    try {
-                        ResponseEntity<String> resp = restTemplate.exchange(
-                            sttr,
-                            HttpMethod.GET,
-                            request,
-                            String.class
-                        );
-
-                        responses.add(resp); // GOOD RESPONSE
-                    } catch (HttpClientErrorException err) {
-                        notFoundCodes.add(code);
-                    }
-
-                } else {
-                    if (!notFoundCodes.isEmpty()) {
+                        System.out.println("code " + code + " in " + System.currentTimeMillis());
                         try {
-                            extraCodes = restTemplate.exchange(
-                                    mainUrl + "/v1/reference-data/airlines?airlineCodes="
-                                            + String.join(",", notFoundCodes),
-                                    HttpMethod.GET,
-                                    request,
-                                    String.class
+                            ResponseEntity<String> resp = restTemplate.exchange(
+                                sttr,
+                                HttpMethod.GET,
+                                request,
+                                String.class
                             );
-                        } catch (HttpClientErrorException err) {
-                            err.printStackTrace(); // Hopefully this won't happen, but is needed to not freeze the app
-                            System.out.println("Unexpected error in codes: " + err.getMessage());
-                        }
-                    } else extraCodes = null;
 
+                            responses.add(resp); // GOOD RESPONSE
+                        } catch (HttpClientErrorException err) {
+                            System.out.println("err " + err.getMessage() + System.currentTimeMillis());
+                            notFoundCodes.add(code);
+                        }
+                        System.out.println("done " + System.currentTimeMillis());
+                    } else {
+                        if (!notFoundCodes.isEmpty()) {
+                            System.out.println("start codes " + notFoundCodes + " at " + System.currentTimeMillis());
+                            try {
+                                extraCodes = restTemplate.exchange(
+                                        mainUrl + "/v1/reference-data/airlines?airlineCodes="
+                                                + String.join(",", notFoundCodes),
+                                        HttpMethod.GET,
+                                        request,
+                                        String.class
+                                );
+                            } catch (HttpClientErrorException err) {
+                                err.printStackTrace(); // Hopefully this won't happen, but is needed to not freeze the app
+                                System.out.println("Unexpected error in codes: " + err.getMessage());
+                            }
+                        } else extraCodes = null;
+
+                        System.out.println("final done: " + System.currentTimeMillis());
+                        latch.countDown(); // let go
+                        scheduler.shutdown();
+                    }
+                } catch(Exception err) {
+                    err.printStackTrace();
+                    System.out.println("Unexpected error: " + err.getMessage());
                     latch.countDown(); // let go
                     scheduler.shutdown();
                 }
+
             }
         };
 
         scheduler.scheduleAtFixedRate(task, 0, REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
         latch.await();
+        System.out.println("exit important");
         return jsonService.createLocationsObj(responses, extraCodes);
     }
 }

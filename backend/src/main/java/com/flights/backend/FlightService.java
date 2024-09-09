@@ -87,6 +87,8 @@ public class FlightService {
     }
 
     public JsonNode searchCodes(Iterator<String> codes) {
+        if (codes == null) return null;
+
         // FORMULATE REQUEST
         String url = flightAuth.getUrl();
         HttpHeaders headers = flightAuth.getHeaders();

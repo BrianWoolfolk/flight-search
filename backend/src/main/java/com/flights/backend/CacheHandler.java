@@ -22,7 +22,7 @@ public class CacheHandler {
         if (this.lastResponse == null || this.lastRequest == null)
             return true;
 
-        return Objects.equals(lastRequest.toString(), request.toString());
+        return !Objects.equals(lastRequest.toString(), request.toString());
     }
 
     public JsonNode getLastResponse() {
