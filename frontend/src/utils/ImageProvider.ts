@@ -15,6 +15,7 @@ import icon_close from "@icon/close.png";
 // #endregion
 
 // #region ##################################################################################### MISC
+import misc_not_found from "@misc/not-found.jpg";
 // #endregion
 
 /** Objeto **I**mage**P**rovider que almacena todas las rutas de todas las imágenes y contenido de la aplicación. */
@@ -35,7 +36,9 @@ const IP = {
   },
 
   /** Imágenes sin categoría utilizadas en ocasiones específicas. */
-  misc: {},
+  misc: {
+    not_found: misc_not_found,
+  },
 };
 
 export default IP;

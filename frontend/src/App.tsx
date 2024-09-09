@@ -10,7 +10,7 @@ import LandingScreen from "@screens/LandingScreen";
 import ResultsScreen from "@screens/ResultsScreen";
 import DetailsScreen from "@screens/DetailsScreen";
 
-import JSN from "@utils/exampleresponse.json";
+// import JSN from "@utils/exampleresponse.json";
 
 // ---------------------------------------------------------------------- TYPESCRIPT IMPORTS
 type _LoaderFunctionArgs = import("react-router-dom").LoaderFunctionArgs;
@@ -35,13 +35,13 @@ async function loadFlight(req: _LoaderFunctionArgs) {
   const url = new URL(req.request.url);
   const composedUrl = BACKEND_URL + "/searchFlight" + url.search;
 
-  console.log("loader entered: ", JSN);
+  // console.log("loader entered: ", JSN);
 
   let search = "";
   if (GS.cache?.formData) search = GS.cache.formData;
   GS.cache = {};
 
-  if (1) return { data: JSN, search };
+  // if (1) return { data: JSN, search };
 
   // ============================== GET DATA
   const response = await fetch(composedUrl).catch(() => null);
@@ -114,7 +114,10 @@ function App() {
               id: "results",
               loader: loadFlight,
               shouldRevalidate: (req) => {
-                return req.currentUrl.pathname === "/search";
+                return (
+                  req.currentUrl.pathname === "/search" ||
+                  req.currentUrl.search !== req.nextUrl.search
+                );
               },
               children: [
                 {

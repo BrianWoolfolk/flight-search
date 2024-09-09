@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { parseCSS, parsePrice } from "scripts/FunctionsBundle";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Dictionary, FlightOffer } from "@utils/ClassTypes";
 import {
   getFlightTime,
@@ -23,9 +23,11 @@ type ResultCardProps = {
 // #region ##################################################################################### COMPONENT
 const _ResultCard = (props: ResultCardProps) => {
   const navi = useNavigate();
+  const location = useLocation();
 
   function handleClick() {
-    if (!props._disabled) navi(props._item + "");
+    if (!props._disabled)
+      navi({ pathname: "/results/" + props._item, search: location.search });
   }
 
   // ---------------------------------------------------------------------- RETURN

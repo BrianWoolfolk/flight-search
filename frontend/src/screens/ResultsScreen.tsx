@@ -1,8 +1,11 @@
 import styled, { css } from "styled-components";
-import { parseCSS } from "scripts/FunctionsBundle";
-import { Link, Outlet, useRouteLoaderData } from "react-router-dom";
+import { parseCSS, parseNumber, useRefresh } from "scripts/FunctionsBundle";
+import { Link, useRouteLoaderData } from "react-router-dom";
 import ResultCard from "@components/ResultCard";
 import { APIData } from "@utils/ClassTypes";
+import Input from "@components/Input";
+import { useCallback, useState } from "react";
+import { getDuration } from "scripts/FlightFunctions";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -13,11 +16,85 @@ type ResultsScreenProps = {} & _Base;
 // #region ##################################################################################### COMPONENT
 const _ResultsScreen = (props: ResultsScreenProps) => {
   // ---------------------------------------------------------------------- ALL FLIGHT DATA
-  const { data: loaderData, search } = useRouteLoaderData("results") as {
+  const { data: loaderData, search: originalData } = useRouteLoaderData(
+    "results"
+  ) as {
     data: APIData;
     search: JSX.Element;
   };
-  console.log("loaderdata:", loaderData);
+
+  const [LS] = useState({ price: "ASC", duration: "ASC", order: true });
+  const [page, setPage] = useState(1);
+  const [refresh] = useRefresh();
+
+  // ---------------------------------------------------------------------- HANDLE FILTERS
+  function handleFilters() {
+    function priceCompare(a, b) {
+      const prcA = parseNumber(a.price.grandTotal);
+      const prcB = parseNumber(b.price.grandTotal);
+
+      return LS.price === "ASC" ? prcA - prcB : prcB - prcA;
+    }
+
+    function durationCompare(a, b) {
+      let durA = 0;
+      a.itineraries.forEach((it) => {
+        durA += parseNumber(getDuration(it.duration, true));
+      });
+
+      let durB = 0;
+      b.itineraries.forEach((it) => {
+        durB += parseNumber(getDuration(it.duration, true));
+      });
+
+      return LS.duration === "ASC" ? durA - durB : durB - durA;
+    }
+
+    loaderData?.data?.sort((a, b) => {
+      const first = LS.order ? priceCompare(a, b) : durationCompare(a, b);
+      const second = LS.order ? durationCompare(a, b) : priceCompare(a, b);
+
+      return first === 0 ? second : first;
+    });
+
+    refresh();
+  }
+
+  // ---------------------------------------------------------------------- SHOW PART OF ARRAY
+  const showFrom = useCallback(() => {
+    const maxCount = Math.min(page * 10, loaderData?.data?.length || 0);
+    const start = Math.max((page - 1) * 10, 0);
+    const items: JSX.Element[] = [];
+
+    for (let i = start; i < maxCount; i++) {
+      items.push(
+        <ResultCard
+          key={i}
+          _data={loaderData.data[i]}
+          _dictionary={loaderData.dictionaries!}
+          _item={i}
+        />
+      );
+    }
+
+    return items;
+  }, [loaderData.data, loaderData.dictionaries, page]);
+
+  // ---------------------------------------------------------------------- CREATE PAGINATION
+  const createPagination = useCallback(() => {
+    const maxCount = Math.ceil((loaderData?.data?.length || 0) / 10);
+    const buttons: JSX.Element[] = [];
+
+    for (let i = 1; i <= maxCount; i++) {
+      buttons.push(
+        <button key={i} onClick={() => setPage(i)} disabled={page === i}>
+          Page {i}
+        </button>
+      );
+    }
+
+    return <div className="pagination">{buttons}</div>;
+  }, [loaderData?.data?.length, page]);
 
   // ---------------------------------------------------------------------- RETURN INCORRECT DATA
   if (!loaderData?.data?.length || !loaderData?.dictionaries) {
@@ -40,18 +117,48 @@ const _ResultsScreen = (props: ResultsScreenProps) => {
 
       <h1>Results Screen</h1>
 
-      {search}
-
-      {loaderData.data.map((item, i) => (
-        <ResultCard
-          key={i}
-          _data={item}
-          _dictionary={loaderData.dictionaries!}
-          _item={i}
+      <div className="sort-controls">
+        <Input
+          _label="Sort by price"
+          _store={LS}
+          _store_var="price"
+          _options={
+            new Map([
+              ["Lower first", "ASC"],
+              ["Higher first", "DESC"],
+            ])
+          }
         />
-      ))}
 
-      <Outlet />
+        <Input
+          _label="Sort by duration"
+          _store={LS}
+          _store_var="duration"
+          _options={
+            new Map([
+              ["Lower first", "ASC"],
+              ["Higher first", "DESC"],
+            ])
+          }
+        />
+
+        <Input
+          _label="Sort by price first"
+          _store={LS}
+          _store_var="order"
+          _type="checkbox"
+        />
+
+        <button onClick={handleFilters}>Apply filters</button>
+      </div>
+
+      {originalData}
+
+      {createPagination()}
+
+      {showFrom()}
+
+      {createPagination()}
     </div>
   );
 };

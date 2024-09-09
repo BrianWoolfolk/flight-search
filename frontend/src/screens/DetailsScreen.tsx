@@ -6,7 +6,12 @@ import {
   parsePrice,
 } from "scripts/FunctionsBundle";
 import DetailSegment from "@components/DetailSegment";
-import { Link, useParams, useRouteLoaderData } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useRouteLoaderData,
+} from "react-router-dom";
 import { APIData } from "@utils/ClassTypes";
 import ResultCard from "@components/ResultCard";
 
@@ -23,6 +28,7 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
     search: JSX.Element;
   };
   const { index } = useParams();
+  const location = useLocation();
 
   /** Shortcut. */
   const offer = loaderData.data[parseNumber(index || "")];
@@ -65,7 +71,10 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
 
       <ScrollToTopOnMount />
 
-      <Link to={"/results"} className="as-button login">
+      <Link
+        to={{ pathname: "/results", search: location.search }}
+        className="as-button login"
+      >
         {"< Go back"}
       </Link>
 

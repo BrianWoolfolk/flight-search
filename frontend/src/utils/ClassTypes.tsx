@@ -196,9 +196,9 @@ export class FlightSearchParams extends _setup {
         <b>{this.originLocationCode}</b> to{" "}
         <b>{this.destinationLocationCode}</b>.
         <br />
-        On {this.departureDate.toLocaleDateString()},{" "}
+        On {this.departureDate.toLocaleDateString()}
         {this.returnDate &&
-          "and including a return flight on " +
+          ", and including a return flight on " +
             this.returnDate.toLocaleDateString()}
         .
         <br />

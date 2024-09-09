@@ -1,4 +1,5 @@
 import { Carriers, Itinerary, Locations } from "@utils/ClassTypes";
+import { parseNumber } from "./FunctionsBundle";
 
 /** Prints time like "9/30/2024, 8:00 AM - 10:30 AM" depending of the itinerary passed */
 export function getFlightTime(itin: Itinerary) {
@@ -36,19 +37,25 @@ export function getFlightLocations(itin: Itinerary, locations: Locations) {
   const origIata = itin.segments[0].departure.iataCode;
   const destIata = itin.segments[itin.segments.length - 1].arrival.iataCode;
 
-  const origAirline = locations[origIata].name;
-  const destAriline = locations[destIata].name;
+  const origAirline = locations[origIata]?.name;
+  const destAriline = locations[destIata]?.name;
 
   return `${origAirline} (${origIata}) - ${destAriline} (${destIata})`;
 }
 
 /** Prints duration from a given string in format `PnYnMnDTnHnMnS`. Only grabs Hrs + Mins */
-export function getDuration(str: string) {
+export function getDuration(str: string, asNumber?: boolean) {
   const reg = /T(?:(\d+)H)?(?:(\d+)M)?/;
   const match = reg.exec(str);
   let newStr = "";
 
   if (match) {
+    if (asNumber) {
+      let num = parseNumber(match[1] || 0);
+      num += match[2] ? parseNumber(match[2]) / 60 : 0;
+      return num + "";
+    }
+
     newStr += match[1] ? match[1] + "h " : "";
     newStr += match[2] ? match[2] + "m" : "";
   }

@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 import { parseCSS } from "scripts/FunctionsBundle";
 import { useNavigate, useRouteError } from "react-router";
 import { Helmet } from "react-helmet";
+import IP from "@utils/ImageProvider";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -13,7 +14,7 @@ type NotFoundScreenProps = {} & _Base;
 const _NotFoundScreen = (props: NotFoundScreenProps) => {
   const navigate = useNavigate();
   const error = useRouteError() as any;
-  const errtext = error?.statusText || error?.message;
+  const errtext = error?.statusText || error?.message || error?.data;
   if (error) console.warn(error);
 
   // ---------------------------------------------------------------------- RETURN
@@ -24,7 +25,7 @@ const _NotFoundScreen = (props: NotFoundScreenProps) => {
       </Helmet>
 
       <img
-        src={"https://picsum.photos/400"}
+        src={IP.misc.not_found}
         alt="Unable to load content"
         className="img-not-found"
       />

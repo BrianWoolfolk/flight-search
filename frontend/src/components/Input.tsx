@@ -160,6 +160,22 @@ const _Input = (props: InputProps) => {
       // -------------------------------------------------- HANDLE OPTIONS
       if (props._options) {
         // ALREADY HANDLED BY RADIO BUTTONS THEMSELVES
+        if (!props._options_as_radio) {
+          const err = props._onChange?.(val, el) || null;
+          if (err) {
+            valid(err, el, blurring);
+            setLS(val); // UPDATE INPUT
+            return;
+          }
+
+          // SAVE IN CASE OF SELECT
+          valid("", el);
+          setLS(val); // UPDATE INPUT
+          props._store[props._store_var] = props._as_number
+            ? parseNumber(val, true)
+            : val;
+        }
+
         props._afterChange?.(val, el);
         return;
       }
@@ -362,7 +378,14 @@ const _Input = (props: InputProps) => {
           ref={ref}
           id={id}
           title={tooltip}
+          name={props._name}
           className={props._className || ""}
+          disabled={props._disabled}
+          value={LS}
+          onFocus={handleFocus}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           style={props._style}
         >
           {arr}

@@ -164,7 +164,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
           <Input
             _label="Currency"
             _store={FormData}
-            _store_var="currency"
+            _store_var="currencyCode"
             _options={
               new Map([
                 ["USD", _T.Currency.USD],
