@@ -5,7 +5,7 @@ import {
   parseCSS,
 } from "scripts/FunctionsBundle";
 import Input from "@components/Input";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { GS } from "App";
 import * as _T from "@utils/ClassTypes";
 import { useNavigate } from "react-router";
@@ -27,6 +27,8 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
   );
 
   const redirect = useNavigate();
+  const refDep = useRef(null);
+  const refArr = useRef(null);
 
   // ---------------------------------------------------------------------- GET IATA CODES
   async function getIATA(keyword: string, searchingFor: string) {
@@ -51,9 +53,11 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
     if (!response || !response.ok) return;
 
     const list = (await response.json()) as string[];
-    localStorage.setItem("IATACodes", JSON.stringify(list));
+    const prevList = JSON.parse(localStorage.getItem("IATACodes") || "[]");
+    const newList = [...new Set<string>([...prevList, ...list])];
+    localStorage.setItem("IATACodes", JSON.stringify(newList));
 
-    setIATAList([...new Set<string>([...IATAList, ...list])]);
+    setIATAList(newList);
   }
 
   // ---------------------------------------------------------------------- HANDLE CODES
@@ -70,6 +74,23 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
   // ---------------------------------------------------------------------- HANDLE SUBMIT
   function handleSubmit(e) {
     e.preventDefault();
+
+    const rd = refDep.current as HTMLInputElement | null;
+    const ra = refArr.current as HTMLInputElement | null;
+
+    if (!rd || !ra) return;
+
+    if (!IATAList.includes(rd.value)) {
+      rd.setCustomValidity("Please select an option");
+      rd.reportValidity();
+      return;
+    }
+
+    if (!IATAList.includes(ra.value)) {
+      ra.setCustomValidity("Please select an option");
+      ra.reportValidity();
+      return;
+    }
 
     const search = FormData.createSearch();
     GS.cache = { formData: FormData.createResults() };
@@ -94,11 +115,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
             _placeholder="Start writing to see suggestions..."
             _width={"xl"}
             _onChange={handleDeparture}
-            _onBlur={(value, el) => {
-              if (!IATAList.includes(value)) {
-                el.setCustomValidity("Please select a option");
-              }
-            }}
+            _inputRef={refDep}
           />
 
           <Input
@@ -110,11 +127,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
             _placeholder="Start writing to see suggestions..."
             _width={"xl"}
             _onChange={handleArrival}
-            _onBlur={(value, el) => {
-              if (!IATAList.includes(value)) {
-                el.setCustomValidity("Please select a option");
-              }
-            }}
+            _inputRef={refArr}
           />
 
           <datalist id={"airports-list"}>

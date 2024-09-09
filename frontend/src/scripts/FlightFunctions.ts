@@ -91,7 +91,9 @@ export function getCarriers(itin: Itinerary, carriers: Carriers) {
 
     if (segm.operating && segm.operating.carrierCode !== segm.carrierCode) {
       arr.push(
-        "Operated by " + carriers[segm.carrierCode] + ` (${segm.carrierCode})`
+        "Operated by " +
+          carriers[segm.operating.carrierCode] +
+          ` (${segm.operating.carrierCode})`
       );
     }
   }
