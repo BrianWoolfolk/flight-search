@@ -180,13 +180,34 @@ export class FlightSearchParams extends _setup {
     );
     search.append("departureDate", intoInputDate(this.departureDate));
     if (this.returnDate) {
-      console.log(this);
       search.append("returnDate", intoInputDate(this.returnDate));
     }
     search.append("adults", this.adults.toString());
     search.append("currencyCode", this.currencyCode.toString());
     search.append("nonStop", this.nonStop.toString());
     return search;
+  };
+
+  readonly createResults = () => {
+    return (
+      <p className="search-status">
+        Showing {this.nonStop && "non-stop"} flight offers from
+        <br />
+        <b>{this.originLocationCode}</b> to{" "}
+        <b>{this.destinationLocationCode}</b>.
+        <br />
+        On {this.departureDate.toLocaleDateString()},{" "}
+        {this.returnDate &&
+          "and including a return flight on " +
+            this.returnDate.toLocaleDateString()}
+        .
+        <br />
+        For{" "}
+        <b>
+          {this.adults} adult{this.adults > 1 && "(s)"}
+        </b>
+      </p>
+    );
   };
 
   /**

@@ -13,7 +13,10 @@ type ResultsScreenProps = {} & _Base;
 // #region ##################################################################################### COMPONENT
 const _ResultsScreen = (props: ResultsScreenProps) => {
   // ---------------------------------------------------------------------- ALL FLIGHT DATA
-  const loaderData = useRouteLoaderData("results") as APIData;
+  const { data: loaderData, search } = useRouteLoaderData("results") as {
+    data: APIData;
+    search: JSX.Element;
+  };
   console.log("loaderdata:", loaderData);
 
   // ---------------------------------------------------------------------- RETURN INCORRECT DATA
@@ -36,6 +39,9 @@ const _ResultsScreen = (props: ResultsScreenProps) => {
       <Link to={"/search"}>{"< Return to Search"}</Link>
 
       <h1>Results Screen</h1>
+
+      {search}
+
       {loaderData.data.map((item, i) => (
         <ResultCard
           key={i}
@@ -59,6 +65,11 @@ const ResultsScreen = styled(_ResultsScreen).attrs(
 )<ResultsScreenProps>`
   ${(props) => css`
     // Ingresa aquí todos los estilos.
+
+    .search-status {
+      margin: var(--margin-big);
+    }
+
     ${parseCSS(props._style)}
   `}
 `;

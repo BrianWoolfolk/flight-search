@@ -1,5 +1,10 @@
 import styled, { css } from "styled-components";
-import { parseCSS, parseNumber, parsePrice } from "scripts/FunctionsBundle";
+import {
+  ScrollToTopOnMount,
+  parseCSS,
+  parseNumber,
+  parsePrice,
+} from "scripts/FunctionsBundle";
 import DetailSegment from "@components/DetailSegment";
 import { Link, useParams, useRouteLoaderData } from "react-router-dom";
 import { APIData } from "@utils/ClassTypes";
@@ -13,7 +18,10 @@ type DetailsScreenProps = {} & _Base;
 
 // #region ##################################################################################### COMPONENT
 const _DetailsScreen = (props: DetailsScreenProps) => {
-  const loaderData = useRouteLoaderData("results") as APIData;
+  const { data: loaderData } = useRouteLoaderData("results") as {
+    data: APIData;
+    search: JSX.Element;
+  };
   const { index } = useParams();
 
   /** Shortcut. */
@@ -24,8 +32,8 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
 
     for (const itin of offer.itineraries) {
       if (offer.itineraries.length > 1) {
-        if (arr.length) arr.push(<h2 key={arr.length}>First Trip</h2>);
-        else arr.push(<h2 key={arr.length}>Return Trip</h2>);
+        if (arr.length) arr.push(<h2 key={arr.length}>Return Trip</h2>);
+        else arr.push(<h2 key={arr.length}>First Trip</h2>);
       }
 
       let i = 0;
@@ -54,6 +62,8 @@ const _DetailsScreen = (props: DetailsScreenProps) => {
   return (
     <div className={props.className}>
       <h1>DETAILS SCREEN</h1>
+
+      <ScrollToTopOnMount />
 
       <Link to={"/results"} className="as-button login">
         {"< Go back"}
@@ -130,6 +140,10 @@ const DetailsScreen = styled(_DetailsScreen).attrs(
   }
 )<DetailsScreenProps>`
   ${(props) => css`
+    .search-status {
+      margin: var(--margin-big);
+    }
+
     .detail-summary {
       display: flex;
     }

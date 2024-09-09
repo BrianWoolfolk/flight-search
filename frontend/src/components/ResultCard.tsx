@@ -31,31 +31,25 @@ const _ResultCard = (props: ResultCardProps) => {
   // ---------------------------------------------------------------------- RETURN
   return (
     <div className={props.className} onClick={handleClick}>
-      <div className="flight-time">
-        {getFlightTime(props._data.itineraries[0])}
-      </div>
+      {props._data.itineraries.map((itin, i) => (
+        <div key={i} className="result-card">
+          <div className="flight-time">{getFlightTime(itin)}</div>
 
-      <div>
-        {getFlightLocations(
-          props._data.itineraries[0],
-          props._dictionary.locations
-        )}
-      </div>
+          <div>{getFlightLocations(itin, props._dictionary.locations)}</div>
 
-      <div className="flight-stops">
-        {getFlightStops(props._data.itineraries[0]).map((val, i) => (
-          <span key={i}>{val}</span>
-        ))}
-      </div>
+          <div className="flight-stops">
+            {getFlightStops(itin).map((val, i) => (
+              <span key={i}>{val}</span>
+            ))}
+          </div>
 
-      <div className="flight-carriers">
-        {getCarriers(
-          props._data.itineraries[0],
-          props._dictionary.carriers
-        ).map((val, i) => (
-          <span key={i}>{val}</span>
-        ))}
-      </div>
+          <div className="flight-carriers">
+            {getCarriers(itin, props._dictionary.carriers).map((val, i) => (
+              <span key={i}>{val}</span>
+            ))}
+          </div>
+        </div>
+      ))}
 
       <div className="flight-price">
         <div>
@@ -92,42 +86,56 @@ const ResultCard = styled(_ResultCard).attrs(
 )<ResultCardProps>`
   ${(props) => css`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 2fr 1fr;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr;
     background-color: var(--color-shadow-white);
 
-    padding: 2em 1.75em;
     margin: var(--margin-big);
 
     ${!props._disabled &&
     `
-      cursor: pointer;
-
-      &:hover {
-        opacity: 0.9;
-      }
+        cursor: pointer;
   
-      &:active {
-        transform: scale(0.95);
+        &:hover {
+          opacity: 0.9;
+        }
+    
+        &:active {
+          transform: scale(0.95);
+        }
+      `}
+
+    .result-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 4fr 2fr;
+
+      padding: 2em 1.75em;
+
+      .flight-time {
+        grid-column: 1 / 3;
       }
-    `}
 
-    .flight-time {
-      grid-column: 1 / 3;
-    }
+      .flight-stops,
+      .flight-carriers {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .flight-stops,
-    .flight-carriers {
-      display: flex;
-      flex-direction: column;
+      &:first-child {
+        border-bottom: 2px solid black;
+      }
     }
 
     .flight-price {
-      grid-column: 3;
-      grid-row: 1 / -1;
+      grid-column: 2;
+      grid-row: 1 / -4;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
+
+      padding: 2em 1.75em;
+      border-left: 2px solid black;
 
       & > div {
         display: flex;

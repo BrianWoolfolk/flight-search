@@ -72,6 +72,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
     e.preventDefault();
 
     const search = FormData.createSearch();
+    GS.cache = { formData: FormData.createResults() };
     redirect("/results?" + search);
   }
 
@@ -187,7 +188,7 @@ const _SearchFlightScreen = (props: SearchFlightScreenProps) => {
           <Input
             _label="Flight type"
             _store={FormData}
-            _store_var="non_stop"
+            _store_var="nonStop"
             _options_as_radio
             _options={
               new Map([

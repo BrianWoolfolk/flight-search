@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { parseCSS, timeBetween } from "scripts/FunctionsBundle";
 import { Dictionary, FlightSegment, TravelerPricing } from "@utils/ClassTypes";
-import { parseFlightTime } from "scripts/FlightFunctions";
+import { getDuration, parseFlightTime } from "scripts/FlightFunctions";
 
 // #region ##################################################################################### PROPS
 type _Base = import("@utils/ClassTypes")._Base;
@@ -47,7 +47,7 @@ const _DetailSegment = (props: DetailSegmentProps) => {
     <div className={props.className}>
       <div className="content">
         <span>
-          Segment {props._index + 1} {awaitTime}
+          <b>Segment {props._index + 1}</b> {awaitTime}
         </span>
 
         <span className="segment-datetime">
@@ -55,9 +55,24 @@ const _DetailSegment = (props: DetailSegmentProps) => {
         </span>
 
         <span className="segment-airports">
-          {locs[depa.iataCode].name} ({depa.iataCode}) -{" "}
-          {locs[arri.iataCode].name} ({arri.iataCode})
+          {locs[depa.iataCode]?.name} ({depa.iataCode}) -{" "}
+          {locs[arri.iataCode]?.name} ({arri.iataCode})
         </span>
+
+        {props._data.stops && (
+          <>
+            <b>With stops in:</b>
+            <ol>
+              {props._data.stops.map((stop, i) => (
+                <li key={i}>
+                  {locs[stop.iataCode]?.name} ({stop.iataCode}) <br />
+                  {parseFlightTime(stop.departureAt!, stop.arrivalAt!)} (
+                  {getDuration(stop.duration)})
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
 
         <span>
           {cars[props._data.carrierCode]} ({props._data.carrierCode})
@@ -89,12 +104,12 @@ const _DetailSegment = (props: DetailSegmentProps) => {
         <span>Amenities: </span>
 
         <ol className="amenities">
-          {fareDetails.amenities.map((amen, i) => (
+          {fareDetails.amenities?.map((amen, i) => (
             <li key={i}>
               {amen.description} (
               {amen.isChargeable ? "Chargeable" : "Not Chargeable"})
             </li>
-          ))}
+          )) || "None"}
         </ol>
       </div>
     </div>

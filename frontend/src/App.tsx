@@ -36,7 +36,12 @@ async function loadFlight(req: _LoaderFunctionArgs) {
   const composedUrl = BACKEND_URL + "/searchFlight" + url.search;
 
   console.log("loader entered: ", JSN);
-  if (1) return JSN;
+
+  let search = "";
+  if (GS.cache?.formData) search = GS.cache.formData;
+  GS.cache = {};
+
+  if (1) return { data: JSN, search };
 
   // ============================== GET DATA
   const response = await fetch(composedUrl).catch(() => null);
@@ -55,7 +60,7 @@ async function loadFlight(req: _LoaderFunctionArgs) {
 
   // RETURN DATA
   const data = await response.json();
-  return data;
+  return { data, search };
 }
 // #endregion
 
